@@ -22,6 +22,5 @@ const PORT = process.env.PORT || 8090
 app.use('/user', userRouter)
 app.listen(PORT, async () => {
     console.log('Server is running at port 8090.')
-    // await mongoose.connect('mongodb://127.0.0.1/prescreening');
     console.log('Connected to mongodb.')
 })
