@@ -14,3 +14,15 @@ export interface User {
     id: string,
     name?:string
 }
+export interface registerRequestBody {
+    email: string,
+    password: string,
+}
+export interface loginRequestBody {
+    email: string,
+    password: string
+}
+export interface updateUserRequestBody {
+    email: string,
+    password: string
+}
