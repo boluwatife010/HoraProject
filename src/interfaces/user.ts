@@ -7,7 +7,9 @@ export interface Iuser extends Document {
     profilepicture?: string,
     name?: string,
     createdAt:Date,
-    updatedAt: Date
+    updatedAt: Date,
+    resetPasswordToken?: string,
+  resetPasswordExpires?: Date
 }
 export interface User {
     email?: string,
@@ -25,4 +27,8 @@ export interface loginRequestBody {
 export interface updateUserRequestBody {
     email: string,
     password: string
+}
+export interface changePasswordRequestBody {
+    oldPassword: string,
+    newPassword: string,
 }

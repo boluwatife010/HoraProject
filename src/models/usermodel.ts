@@ -22,6 +22,8 @@ const userSchema: Schema<Iuser> = new Schema({
     name: {type: String},
     profilepicture: {type:String},
     createdAt: {type: Date, default: Date.now},
-    updatedAt: {type: Date, default: Date.now}
+    updatedAt: {type: Date, default: Date.now},
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
 })
 export const userModel = mongoose.model('User', userSchema);

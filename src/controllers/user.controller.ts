@@ -1,5 +1,7 @@
+import { body } from "express-validator";
 import { loginUser, registerUser, getAllUsers, 
-    getUser, deleteUser, updateUser } from "../services/userservice";
+    getUser, deleteUser, updateUser, forgotPassword, resetPassword, changePassword, 
+    verifyOTP} from "../services/userservice";
 import express from 'express';
 
 export const userRegistrationHandler = async (req:express.Request, res: express.Response) => {
@@ -95,3 +97,72 @@ export const deleteAUserHandler = async (req: express.Request, res: express.Resp
         return res.status(500).send({message: 'Internal server error.'}); 
     }
 }
+export const changePasswordHandler = async (req: express.Request, res: express.Response) => {
+    const {userId} = req.params;
+    const {newPassword, oldPassword} = req.body;
+    try {
+        if (!userId || oldPassword || newPassword) {
+            return res.status(400).send({message: 'Please provide a valid user id.'})
+        }
+        const changingPassword = await changePassword(userId, {newPassword, oldPassword})
+        if(!changingPassword) {
+            return res.status(400).send({message: 'Could not change the password'});
+        }
+        return res.status(200).send({message: 'Successfully changed password.'})
+    }
+    catch (err) {
+        console.log(err, 'Invalid err');
+        return res.status(500).send({message: 'Internal server error.'}); 
+    }
+}
+export const forgotPasswordHandler = async (req: express.Request, res: express.Response) => {
+    const {email} = req.body;
+    try {
+        if(!email) {
+            return res.status(400).send({message: 'Please provide a valid email address'})
+        }
+        const forgetRoute =await forgotPassword(email);
+        if (forgetRoute) {
+            return res.status(400).send({message: 'could not create otp'})
+        }
+        return res.status(200).send({message: 'Successfully sent otp check your email.'})
+    }   catch (err) {
+        console.log(err, 'Invalid err');
+        return res.status(500).send({message: 'Internal server error.'}); 
+    }
+}
+export const resetPasswordHandler = async (req: express.Request, res: express.Response) => {
+    const {email, otp, newPassword} = req.body
+    try {
+        if (!email || !otp || !newPassword) {
+            return res.status(400).send({mesage: 'Provide the following details'})
+        }
+        const resetRoute = await resetPassword(email, newPassword, otp)
+        if (!resetRoute) {
+            return res.status(400).send({message: 'Could not reset password.'});
+        }
+        return res.status(200).send({message: 'Password successfully reset.'})
+    }   catch (err) {
+        console.log(err, 'Invalid err');
+        return res.status(500).send({message: 'Internal server error.'}); 
+    }
+}
+export const verifyOtpHandler = async (req: express.Request, res: express.Response) => {
+    const { email, otp } = req.body;
+  
+    try {
+      if (!email || !otp) {
+        return res.status(400).send({ message: 'Please provide both email and OTP.' });
+      }
+  
+      const isOtpValid = await verifyOTP(email, otp); // Assuming verifyOtp returns a boolean
+  
+      if (!isOtpValid) {
+        return res.status(400).send({ message: 'Invalid OTP or OTP expired.' });
+      }
+      return res.status(200).send({ message: 'OTP verified successfully. You can now reset your password.' });
+    } catch (err) {
+      console.error('Error verifying OTP:', err);
+      return res.status(500).send({ message: 'Internal server error.' });
+    }
+  };

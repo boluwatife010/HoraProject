@@ -1,8 +1,9 @@
 import { userModel } from "src/models/usermodel";
-import { registerRequestBody, loginRequestBody, updateUserRequestBody} from "src/interfaces/user";
+import { registerRequestBody, loginRequestBody, updateUserRequestBody, changePasswordRequestBody} from "src/interfaces/user";
 import { generateAuthToken } from "src/auth/auth";
 import bcrypt from 'bcryptjs';
-import { Error } from "mongoose";
+import nodemailer from 'nodemailer';
+
 
 export const registerUser = async (body: registerRequestBody):Promise <any> => {
     const {email, password} = body;
@@ -70,3 +71,76 @@ export const deleteUser = async (id: string) => {
     }
     return deleting;
 }
+export const changePassword = async (userId: string, body: changePasswordRequestBody,) => {
+    const {oldPassword, newPassword} = body
+    const user = await userModel.findById(userId);
+    if (!user) {
+        throw new Error ('User not found');
+    }
+    const matching = await bcrypt.compare(oldPassword, user.password)
+    if (!matching) {
+        throw new Error ('The old password is not correct')
+    }
+    user.password = await bcrypt.hash(newPassword, 10)
+    await user.save();
+    return {message: 'Password changed successfully.'}
+}
+export const forgotPassword = async (email: string): Promise<any> => {
+    const user = await userModel.findOne({email});
+    if (!user) {
+        throw new Error ('User with this email is not found')
+    }
+    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    user.resetPasswordToken = otp;
+    user.resetPasswordExpires =  new Date(Date.now() + 3600000)
+    await user.save();
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth : {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    })
+    const mailOptions = {
+        to: user.email,
+        from: 'yourapp@example.com',
+        subject: 'Password Reset OTP',
+        text: `Your OTP for password reset is: ${otp}`,
+    }
+    await transporter.sendMail(mailOptions);
+
+    return { message: 'OTP sent to email' };
+}
+export const resetPassword = async (email: string, otp: string, newPassword: string): Promise<any> => {
+    const user = await userModel.findOne({
+      email,
+      resetPasswordToken: otp,
+      resetPasswordExpires: { $gt: Date.now() }, 
+    });
+  
+    if (!user) {
+      throw new Error('OTP is invalid or has expired.');
+    }
+  
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.resetPasswordToken = undefined; 
+    user.resetPasswordExpires = undefined;
+  
+    await user.save();
+  
+    return { message: 'Password reset successfully' };
+  };
+  export const verifyOTP = async (email: string, otp: string): Promise<any> => {
+    const user = await userModel.findOne({
+      email,
+      resetPasswordToken: otp,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+  
+    if (!user) {
+      throw new Error('OTP is invalid or has expired.');
+    }
+  
+    return { message: 'OTP is valid' };
+  };
+  

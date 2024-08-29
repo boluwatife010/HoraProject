@@ -42,6 +42,10 @@ This project is a Node.js and TypeScript-based API for creating tasks for studen
     ```env
     MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/mydatabase?retryWrites=true&w=majority
     PORT=8090
+    JWT_SECRET=your jwt secret
+    CLIENT_ID=Your google client id
+    CLIENT_SECRET=Your your client secret
+    SESSION_SECRET=Your session secret
     ```
 
 4. Start the server:
