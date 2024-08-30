@@ -5,9 +5,9 @@ import { loginUser, registerUser, getAllUsers,
 import express from 'express';
 
 export const userRegistrationHandler = async (req:express.Request, res: express.Response) => {
-    const {email, password, username} = req.body;
+    const {email, password} = req.body;
     try {
-    if (!email || !password || !username) {
+    if (!email || !password ) {
         return res.status(400).send({message: 'Please fill in the required fields.'});
     }
     const register = await registerUser({email, password});

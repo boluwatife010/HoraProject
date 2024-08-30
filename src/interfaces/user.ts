@@ -1,17 +1,20 @@
+import { Document, ObjectId } from 'mongoose';
+
 export interface Iuser extends Document {
-    id: string;
-    username: string,
-    email: string,
-    password: string,
-    googleId?: string,
-    profilepicture?: string,
-    name?: string,
-    createdAt:Date,
-    updatedAt: Date,
-    resetPasswordToken?: string,
-  resetPasswordExpires?: Date
+    username: string;
+    email: string;
+    password: string;
+    googleId?: string;
+    profilepicture?: string;
+    name?: string;
+    createdAt: Date;
+    updatedAt: Date;
+    resetPasswordToken?: string;
+    resetPasswordExpires?: Date;
 }
+
 export interface User {
+    _id: ObjectId;
     email?: string,
     id: string,
     name?:string

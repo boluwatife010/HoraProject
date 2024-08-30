@@ -1,6 +1,6 @@
-import { userModel } from "src/models/usermodel";
-import { registerRequestBody, loginRequestBody, updateUserRequestBody, changePasswordRequestBody} from "src/interfaces/user";
-import { generateAuthToken } from "src/auth/auth";
+import { userModel } from "../models/usermodel";
+import { registerRequestBody, loginRequestBody, updateUserRequestBody, changePasswordRequestBody, Iuser} from "src/interfaces/user";
+import { generateAuthToken } from "../auth/auth";
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 
@@ -11,9 +11,9 @@ export const registerUser = async (body: registerRequestBody):Promise <any> => {
     if (existingUser) {
         throw new Error ('This email is already in use!')
     }
-    const hashPassord = await bcrypt.hash(password, 10);
-    const createUser = await userModel.create({email, password:hashPassord});
-    const token = generateAuthToken(createUser._id.toString());
+    // const hashPassord = await bcrypt.hash(password, 10);
+    const createUser = new userModel({ email, password});
+    const token = generateAuthToken((createUser._id as Iuser).toString());
     if (!createUser) {
         throw new Error ('Please validate your details above')
     }
@@ -30,8 +30,8 @@ export const loginUser = async (body: loginRequestBody) => {
     if (!comparing) {
         throw new Error ('Invalid password used.')
     }
-    const token = generateAuthToken(login._id.toString());
-    return {login, token};
+    //const token = generateAuthToken((login._id as Iuser).toString());
+    return {login};
 }
 export const updateUser = async (body: updateUserRequestBody, id: string) => {
     const {email, password} =  body;
@@ -43,7 +43,7 @@ export const updateUser = async (body: updateUserRequestBody, id: string) => {
         update.email = email
     }
     if (password) {
-        update.password = await bcrypt.hash(password, 10);
+        update.password = password;
         
     }
    await update.save();

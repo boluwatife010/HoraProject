@@ -1,6 +1,6 @@
 import jwt,{ Secret} from 'jsonwebtoken';
 import express from 'express';
-import { User } from '../interfaces/user';
+import { Iuser, User } from '../interfaces/user';
 require('dotenv').config();
 export const generateAuthToken = (userId: string): string => {
     const token = jwt.sign({userId}, process.env.JWT_SECRET as Secret, {expiresIn: '30d'});
@@ -30,32 +30,30 @@ export const authenticateToken = (req:express.Request, res: express.Response, ne
     }
 
 }
-export const handleGoogleCallback = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const user = req.user as User;
-  
-    if (!user) {
-      return res.status(401).json({ message: 'User not found' });
+ export const handleGoogleCallback = (req: express.Request, res: express.Response) => {
+  const user = req.user as User;
+  if (!user) {
+    return res.status(401).send({ message: 'User not authenticated' });
+  }
+  const token = generateAuthToken(user._id .toString());
+  const frontendUrl = process.env.FRONTEND_URL;
+if (frontendUrl) {
+    res.redirect(`${frontendUrl}/success?token=${token}`);
+  } else {
+    res.send({
+      message: 'Successfully logged in with Google!',
+      user,
+      token,
+    });
+  }
+};
+export const logout = (req: express.Request, res:express.Response) => {
+  res.clearCookie('token');
+  res.redirect('/login'); 
+};
+export const isAuthenticated = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (req.isAuthenticated()) {
+    return next();
     }
-  
-    try {
-      const token = generateAuthToken(user.id);
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 3600000,
-        sameSite: 'strict' 
-      
-      })}   catch (error) {
-        next(error); 
-      }
-    }
-    export const logout = (req: express.Request, res:express.Response) => {
-        res.clearCookie('token');
-        res.redirect('/login'); 
-      };
-      export const isAuthenticated = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-        if (req.isAuthenticated()) {
-          return next();
-        }
-        res.redirect('/login'); 
-      };
+    res.redirect('/login'); 
+};
