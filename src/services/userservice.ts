@@ -20,7 +20,7 @@ export const registerUser = async (body: registerRequestBody):Promise <any> => {
     await createUser.save();
     return {createUser, token}
 }
-export const loginUser = async (body: loginRequestBody) => {
+export const loginUser = async (body: loginRequestBody): Promise<any> => {
     const {email, password} = body;
     const login = await userModel.findOne({email})
     if (!login) {
@@ -33,7 +33,7 @@ export const loginUser = async (body: loginRequestBody) => {
     //const token = generateAuthToken((login._id as Iuser).toString());
     return {login};
 }
-export const updateUser = async (body: updateUserRequestBody, id: string) => {
+export const updateUser = async (body: updateUserRequestBody, id: string): Promise<any> => {
     const {email, password} =  body;
     const update = await userModel.findById(id);
     if (!update) {
@@ -50,30 +50,30 @@ export const updateUser = async (body: updateUserRequestBody, id: string) => {
    return update
 
 }
-export const getUser = async (id: string) => {
+export const getUser = async (id: string): Promise<any> => {
     const user = await userModel.findById(id);
     if (!user) {
         throw new Error ('User not found.')
     }
     return user;
 }
-export const getAllUsers = async () => {
+export const getAllUsers = async (): Promise<any> => {
     const all = await userModel.find();
     if (!all) {
         throw new Error ('Could not get all users.')
     }
     return all;
 }
-export const deleteUser = async (id: string) => {
+export const deleteUser = async (id: string): Promise<any> => {
     const deleting = await userModel.findByIdAndDelete(id);
     if (!deleting) {
         throw new Error ('The id provided above is not valid.')
     }
     return deleting;
 }
-export const changePassword = async (userId: string, body: changePasswordRequestBody,) => {
+export const changePassword = async (id: string, body: changePasswordRequestBody,) => {
     const {oldPassword, newPassword} = body
-    const user = await userModel.findById(userId);
+    const user = await userModel.findById(id);
     if (!user) {
         throw new Error ('User not found');
     }
@@ -90,15 +90,22 @@ export const forgotPassword = async (email: string): Promise<any> => {
     if (!user) {
         throw new Error ('User with this email is not found')
     }
-    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); 
     user.resetPasswordToken = otp;
-    user.resetPasswordExpires =  new Date(Date.now() + 3600000)
+    user.resetPasswordExpires = new Date(Date.now() + 3600000); 
+    await user.save();
+    console.log(`Generated OTP for ${email}: ${otp}`);
     await user.save();
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth : {
+            type: 'OAuth2',
             user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
+            clientId: process.env.CLIENT_ID,
+            clientSecret: process.env.CLIENT_SECRET,
+            refreshToken: process.env.REFRESH_TOKEN,
+            //accessToken: oauth2Client.getAccessToken(),
+
         }
     })
     const mailOptions = {
@@ -111,30 +118,31 @@ export const forgotPassword = async (email: string): Promise<any> => {
 
     return { message: 'OTP sent to email' };
 }
-export const resetPassword = async (email: string, otp: string, newPassword: string): Promise<any> => {
+export const resetPassword = async (email: string, newPassword:string, otp:string): Promise<any> => {
+    console.log("Resetting password for email:", email);
+    console.log("Provided OTP:", otp); 
+    console.log("Provided new password:", newPassword);
     const user = await userModel.findOne({
-      email,
-      resetPasswordToken: otp,
-      resetPasswordExpires: { $gt: Date.now() }, 
+      email: email.trim(),
+      resetPasswordToken: otp.trim(), 
+      resetPasswordExpires: { $gt: new Date() }, 
     });
-  
     if (!user) {
+      console.error("User not found or OTP is invalid/expired.");
       throw new Error('OTP is invalid or has expired.');
     }
-  
+    console.log("User found. Proceeding with password reset.");
     user.password = await bcrypt.hash(newPassword, 10);
     user.resetPasswordToken = undefined; 
     user.resetPasswordExpires = undefined;
-  
     await user.save();
-  
     return { message: 'Password reset successfully' };
-  };
+};
   export const verifyOTP = async (email: string, otp: string): Promise<any> => {
     const user = await userModel.findOne({
       email,
       resetPasswordToken: otp,
-      resetPasswordExpires: { $gt: Date.now() },
+      resetPasswordExpires: { $gt: Date() },
     });
   
     if (!user) {

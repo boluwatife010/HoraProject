@@ -37,10 +37,10 @@ export const userLoginHandler = async (req: express.Request, res: express.Respon
     }
 }
 export const updateUserHandler = async (req: express.Request, res: express.Response) => {
-    const {email, password, username} = req.body;
+    const {email, password} = req.body;
     const {id} = req.params;
     try {
-        if (!email || !password || !username) {
+        if (!email || !password ) {
             return res.status(400).send({message: 'Please update one of the required fields.'});
         };
         const update = await updateUser({email, password}, id);
@@ -98,13 +98,13 @@ export const deleteAUserHandler = async (req: express.Request, res: express.Resp
     }
 }
 export const changePasswordHandler = async (req: express.Request, res: express.Response) => {
-    const {userId} = req.params;
+    const {id} = req.params;
     const {newPassword, oldPassword} = req.body;
     try {
-        if (!userId || oldPassword || newPassword) {
-            return res.status(400).send({message: 'Please provide a valid user id.'})
+        if (!oldPassword || !newPassword) {
+            return res.status(400).send({message: 'Please provide the required fields'})
         }
-        const changingPassword = await changePassword(userId, {newPassword, oldPassword})
+        const changingPassword = await changePassword(id, {newPassword, oldPassword})
         if(!changingPassword) {
             return res.status(400).send({message: 'Could not change the password'});
         }
@@ -122,7 +122,7 @@ export const forgotPasswordHandler = async (req: express.Request, res: express.R
             return res.status(400).send({message: 'Please provide a valid email address'})
         }
         const forgetRoute =await forgotPassword(email);
-        if (forgetRoute) {
+        if (!forgetRoute) {
             return res.status(400).send({message: 'could not create otp'})
         }
         return res.status(200).send({message: 'Successfully sent otp check your email.'})

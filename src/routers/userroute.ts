@@ -10,10 +10,10 @@ const router = express.Router()
 router.post('/register', userRegistrationHandler );
 router.post('/login', authenticateToken, userLoginHandler);
 router.put('/update/:id', authenticateToken, updateUserHandler );
-router.post('/reset-password', resetPasswordHandler);
-router.post('/change-password', changePasswordHandler);
-router.post('/forgot-password', forgotPasswordHandler);
-router.post('/verify-password', verifyOtpHandler)
+router.post('/reset-password/:id', resetPasswordHandler);
+router.post('/change-password/:id', changePasswordHandler);
+router.post('/forgot-password/:id', forgotPasswordHandler);
+router.post('/verify-password/:id', verifyOtpHandler)
 router.get('/:id',authenticateToken,  getAUserHandler );
 router.get('/', getAllUsersHandler);
 router.delete('/delete/:id', authenticateToken,  deleteAUserHandler);
