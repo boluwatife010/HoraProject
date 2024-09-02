@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 import { Notification } from 'src/interfaces/notification';
 
 class NotificationService {
-  async createNotification(data: Pick<Notification, '_id' | 'createdAt' | 'updatedAt'>): Promise<Notification> {
+  async createNotification(data: Pick<Notification, 'userId' | 'message' | 'status' | 'type'>): Promise<Notification> {
     const notification = new notificationModel(data);
     await notification.save();
     return notification;
