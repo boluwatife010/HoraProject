@@ -4,8 +4,8 @@ import { createTask, getATask, getAllTasks, updateTask, searchTask, deleteTask }
 export const createTaskHandler = async (req: express.Request, res: express.Response) => {
     const {title, description, dueDate, repeatTask} = req.body;
     try {
-        if (!title || !description || !dueDate || ! repeatTask) {
-            return res.status(400).send({message: 'Please provide the requied fields.'})
+        if (!title && !description && !dueDate && ! repeatTask) {
+            return res.status(400).send({message: 'Please provide the required fields.'})
         }
         const create = await createTask({title, description, dueDate, repeatTask});
         if (!create) {
@@ -52,10 +52,10 @@ export const updateTaskHandler = async (req: express.Request, res: express.Respo
         if (!id) {
             return res.status(400).send({message: 'Please provide a valid id.'});
         }
-        if (!title || !description) {
+        if (!title && !description) {
             return res.status(400).send({message: 'Please update one of the fields'})
         }
-        const update = await updateTask(title, description)
+        const update = await updateTask(id, {title, description})
         if (!update) {
             return res.status(404).send({message: 'Could not update task'})
         }

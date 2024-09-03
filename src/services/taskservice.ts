@@ -2,7 +2,7 @@ import { taskModel } from "../models/taskmodel";
 import { createTaskRequestBody, searchTaskRequestBody, updateTaskRequestBody } from "../interfaces/task";
 export const createTask = async (body: createTaskRequestBody): Promise<any> => {
     const {title, description, dueDate, repeatTask} = body;
-    if (!title || !description || !dueDate || !repeatTask) {
+    if (!title && !description && !dueDate && !repeatTask) {
         throw new Error ('Please provide the following details.')
     }
     const newTask = new taskModel({title, description, dueDate, repeatTask})
@@ -28,10 +28,15 @@ export const getAllTasks = async (): Promise<any> => {
 }
 export const updateTask = async (id: string, body: updateTaskRequestBody): Promise<any> => {
     const {title, description} = body;
-    if (!title || !description) {
+    if (!title && !description) {
         throw new Error ('Please provide one of the following fields to update')
     }
-    const updates = await taskModel.findOne({id});
+    const updates = await taskModel.findByIdAndUpdate( id,
+        {
+            ...(title && { title }),
+            ...(description && { description })
+        },
+        { new: true });
     if (!updates) {
         throw new Error('Could not find task with specific id.')
     }
