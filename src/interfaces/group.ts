@@ -1,8 +1,8 @@
 import mongoose, { Document } from "mongoose";
-export interface Group {
+export interface Group extends Document {
     name: string;
-    members: mongoose.Schema.Types.ObjectId[];
-    tasks:mongoose.Schema.Types.ObjectId[];
+    members: mongoose.Types.ObjectId[]; 
+    tasks: mongoose.Types.ObjectId[];
     inviteLink: string;
     isFull: boolean;
     createdAt: Date;

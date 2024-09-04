@@ -1,8 +1,12 @@
+import mongoose from "mongoose";
+
 export interface Task {
     title: string;
     description: string;
     dueDate: Date;
     completed: boolean;
+    completedBy: mongoose.Types.ObjectId[]
+    completedAt: Date;
     repeatTask: 'daily' | 'weekly' | 'monthly' | 'none';
     createdAt: Date;
     updatedAt: Date

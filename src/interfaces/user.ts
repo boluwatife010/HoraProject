@@ -2,9 +2,10 @@ import { Document, ObjectId } from 'mongoose';
 
 export interface Iuser extends Document {
     username: string;
-    points: Number;
+    points: number;
     email: string;
     password: string;
+    dailyCompletedTasks:number;
     googleId?: string;
     profilepicture?: string;
     name?: string;

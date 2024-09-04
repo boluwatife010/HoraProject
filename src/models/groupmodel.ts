@@ -1,20 +1,21 @@
 import mongoose from 'mongoose';
 import {Group, Invitation} from '../interfaces/group'
 const Schema = mongoose.Schema;
-const groupSchema =  new Schema ({
+const groupSchema = new Schema<Group>({
     name: {
         type: String, 
         required: true
     },
-    members:[ {
-        type: Schema.Types.ObjectId, ref: 'User'
+    members: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }],
-    tasks:[ {
-        type: Schema.Types.ObjectId,
+    tasks: [{
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Task'
     }],
     inviteLink: {
-        typw: String,
+        type: String,
         required: true
     },
     isFull: {
@@ -23,15 +24,15 @@ const groupSchema =  new Schema ({
     },
     createdAt: {
         type: Date,
-        default: Date.now()
+        default: Date.now 
     },
     expiresAt: {
         type: Date,
         required: true
     }
-})
+});
 
-export const groupModel = mongoose.model<Group>('Group',groupSchema )
+export const groupModel = mongoose.model<Group>('Group', groupSchema);
 
 const invationSchema = new Schema ({
     groupId: {

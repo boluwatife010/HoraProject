@@ -1,5 +1,7 @@
 import { taskModel } from "../models/taskmodel";
+import cron from 'node-cron'
 import { createTaskRequestBody, searchTaskRequestBody, updateTaskRequestBody } from "../interfaces/task";
+import { userModel } from "../models/usermodel";
 export const createTask = async (body: createTaskRequestBody): Promise<any> => {
     const {title, description, dueDate, repeatTask} = body;
     if (!title && !description && !dueDate && !repeatTask) {
@@ -80,40 +82,56 @@ export const getTasksForDay = async (userId: string, date: Date): Promise<any> =
     return { tasks, completedTasks, totalTasks: tasks.length, progress };
   };
 
-  export const updateTaskStatus = async (taskId: string, completed: boolean): Promise<any> => {
+export const updateTaskStatus = async (taskId: string, completed: boolean): Promise<any> => {
     const task = await taskModel.findById(taskId);
-  
     if (!task) {
-      throw new Error('Task not found.');
+        throw new Error('Task not found.');
+      }
+    
+      task.completed = completed;
+      if (completed) {
+        task.completedAt = new Date();
+      // } else {
+      //   task.completedAt = null;
+      // }
+    
+      await task.save();
+    
+      return task;
+}
     }
-  
-    task.completed = completed;
-    if (completed) {
-      task.completedAt = new Date();
-    } else {
-      task.completedAt = null;
-    }
-  
-    await task.save();
-  
-    return task;
-  };
 
-  // taskService.ts
-
-export const calculateTaskProgress = async (userId: string, date: Date): Promise<number> => {
-    const startOfDay = new Date(date.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(date.setHours(23, 59, 59, 999));
-
-    const tasks = await taskModel.find({
-        createdBy: userId,
-        dueDate: { $gte: startOfDay, $lt: endOfDay }
+    export const calculateProgress = async (userId: string) => {
+        const user = await userModel.findById(userId);
+        if (!user) throw new Error('User not found');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); 
+        const totalTasks = await taskModel.countDocuments({
+            createdBy: userId,
+            dueDate: { $gte: today },
+        });
+        if (totalTasks === 0) {
+            return {
+                progress: `0%`,
+                completedTasks: 0,
+                totalTasks: 0,
+            };
+        }
+        const pointsPerTask = 100 / totalTasks;
+        const progress = (user.dailyCompletedTasks / totalTasks) * 100
+        const accumulatedPoints = Math.min(user.dailyCompletedTasks * pointsPerTask, 100);
+        user.points = accumulatedPoints;
+        await user.save();
+    
+        return {
+            progress: `${progress.toFixed(2)}%`,
+            completedTasks: user.dailyCompletedTasks,
+            totalTasks,
+            points: accumulatedPoints,
+        };
+    };
+    cron.schedule('0 0 * * *', async () => {
+        await userModel.updateMany({}, { $set: { points: 100, dailyCompletedTasks: 0 } });
+        await taskModel.deleteMany({ dueDate: { $lt: new Date() } });
     });
-
-    const completedTasks = tasks.filter(task => task.completed).length;
-    const totalTasks = tasks.length;
-
-    const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-
-    return progress;
-};
+    

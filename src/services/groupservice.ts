@@ -1,6 +1,6 @@
 import { groupModel, invitationModel } from "../models/groupmodel";
 import nodemailer from 'nodemailer';
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { taskModel } from "../models/taskmodel";
 import { userModel } from "../models/usermodel";
 import { createGroupTaskBody, invitationRequestBody } from "../interfaces/group";
@@ -62,6 +62,7 @@ export const createLink = async (body: invitationRequestBody)=> {
     return {message: 'Invitation sent successfully'}
 }
 export const joinGroup = async (userId: string, inviteLink: string): Promise<any> => {
+    const userObjectId = new Types.ObjectId(userId);
     const group = await groupModel.findOne({inviteLink})
     if (!group) {
         throw new Error('Invalid invite link');
@@ -69,7 +70,7 @@ export const joinGroup = async (userId: string, inviteLink: string): Promise<any
     if(group.isFull || group.members.length >= 4) {
         throw new Error ('Sorry, the group is full already.')
     }
-    group.members.push(new Types.ObjectId(userId))
+    group.members.push(userObjectId)
     if(group.members.length === 4) {
         group.isFull = true
     }
@@ -78,23 +79,29 @@ export const joinGroup = async (userId: string, inviteLink: string): Promise<any
     return group;
 }
 export const createGroupTask = async (body: createGroupTaskBody): Promise<any> => {
-    const {title, groupId, description, dueDate} = body
-    if (!groupId || !title || description ||  dueDate) {
-        throw new Error ('Please provide the following details')
+    const { title, groupId, description, dueDate } = body;
+
+    if (!groupId || !title || !description || !dueDate) {
+        throw new Error('Please provide all the required details');
     }
-    const group = await groupModel.findById(groupId)
+    const groupObjectId = new Types.ObjectId(groupId);
+    const group = await groupModel.findById(groupObjectId);
     if (!group) {
-        throw new Error('Could not find the group id')
+        throw new Error('Could not find the group');
     }
     const newTask = new taskModel({
-        title, description, dueDate, groupId, createdBy: group.members[0] 
-    })
-    await newTask.save()
+        title,
+        description,
+        dueDate,
+        groupId: groupObjectId,
+        createdBy: group.members[0],
+    });
+    await newTask.save();
     group.tasks.push(newTask._id);
     await group.save();
 
-  return newTask;
-}
+    return newTask;
+};
 export const updateGroupTask = async (taskId: string, updates: Partial<{ title: string; description: string; dueDate: Date; }>): Promise<any> => {
     const task = await taskModel.findById(taskId);
     if (!task) {
@@ -104,3 +111,23 @@ export const updateGroupTask = async (taskId: string, updates: Partial<{ title: 
     await task.save();
     return task;
   };
+
+  export const completeTask = async (taskId: string, userId: string) => {
+    const task = await taskModel.findById(taskId);
+    const userObjectId = new mongoose.Types.ObjectId(userId)
+    if (!task) throw new Error('Task not found');
+    if (!task.completedBy.includes(userObjectId)) {
+        task.completedBy.push(userObjectId);
+        await task.save();
+        const user = await userModel.findById(userId);
+        if (user) {
+            user.dailyCompletedTasks += 1;
+            const totalTasks = await taskModel.countDocuments({ completedBy: userId });
+            const points = Math.min(100, totalTasks * 20);
+            user.points = points;
+            await user.save();
+        }
+    }
+
+    return task;
+};

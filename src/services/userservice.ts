@@ -118,6 +118,28 @@ export const forgotPassword = async (email: string): Promise<any> => {
 
     return { message: 'OTP sent to email' };
 }
+export const getLeaderboard = async (groupId: string) => {
+    const users = await userModel.find({ groupId }).sort({ points: -1 });
+    return users.map(user => ({
+        name: user.name,
+        points: user.points,
+        dailyCompletedTasks: user.dailyCompletedTasks,
+    }));
+};
+export const calculateProgress = async (userId: string) => {
+    const user = await userModel.findById(userId);
+    if (!user) throw new Error('User not found');
+
+    const totalTasks = 5; 
+    const progress = (user.dailyCompletedTasks / totalTasks) * 100;
+
+    return {
+        progress: `${progress}%`,
+        completedTasks: user.dailyCompletedTasks,
+        totalTasks,
+    };
+};
+
 export const resetPassword = async (email: string, newPassword:string, otp:string): Promise<any> => {
     console.log("Resetting password for email:", email);
     console.log("Provided OTP:", otp); 
