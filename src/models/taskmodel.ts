@@ -25,7 +25,10 @@ const taskSchema = new Schema({
     groupId: { type: Schema.Types.ObjectId, 
         ref: 'Group' },
     createdBy: { type: Schema.Types.ObjectId, 
-        ref: 'User', required: true }
+        ref: 'User', required: true },
+    completedAt: {
+        type: Date
+    }
     // userId: {
     //     type: Schema.Types.ObjectId, 
     //     ref: 'User',

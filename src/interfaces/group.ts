@@ -4,7 +4,7 @@ export interface Group {
     members: mongoose.Schema.Types.ObjectId[];
     tasks:mongoose.Schema.Types.ObjectId[];
     inviteLink: string;
-    isFull: string;
+    isFull: boolean;
     createdAt: Date;
     expiresAt: Date;
 }
@@ -18,4 +18,10 @@ export interface invitationRequestBody {
     groupId: string;
     email: string;
     inviterId: string
+}
+export interface createGroupTaskBody {
+    groupId: string;
+    title: string;
+    description: string;
+    dueDate: Date;
 }

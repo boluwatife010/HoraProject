@@ -6,13 +6,13 @@ const groupSchema =  new Schema ({
         type: String, 
         required: true
     },
-    members: {
+    members:[ {
         type: Schema.Types.ObjectId, ref: 'User'
-    },
-    tasks: {
+    }],
+    tasks:[ {
         type: Schema.Types.ObjectId,
         ref: 'Task'
-    },
+    }],
     inviteLink: {
         typw: String,
         required: true

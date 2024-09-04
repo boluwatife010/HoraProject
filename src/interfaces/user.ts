@@ -2,6 +2,7 @@ import { Document, ObjectId } from 'mongoose';
 
 export interface Iuser extends Document {
     username: string;
+    points: Number;
     email: string;
     password: string;
     googleId?: string;
