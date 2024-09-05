@@ -131,3 +131,55 @@ export const completeTask = async (taskId: string, userId: string) => {
 
     return task;
 };
+
+export const getGroupTask = async (groupId: string, taskId: string) => {
+    const group = await groupModel.findById(groupId).populate('tasks');
+    if (!group) throw new Error('Group not found');
+
+    const task = group.tasks.find(task => task._id.toString() === taskId);
+    if (!task) throw new Error('Task not found');
+
+    return task;
+};
+
+export const getAllGroupTasks = async (groupId: string) => {
+    const group = await groupModel.findById(groupId).populate('tasks');
+    if (!group) throw new Error('Group not found');
+
+    return group.tasks;
+};
+
+export const deleteGroupTask = async (groupId: string, taskId: string) => {
+    const group = await groupModel.findById(groupId);
+    if (!group) throw new Error('Group not found');
+    group.tasks = group.tasks.filter(task => task.toString() !== taskId);
+
+    await group.save();
+    await taskModel.findByIdAndDelete(taskId);
+    return { message: 'Task deleted successfully' };
+};
+
+export const leaveGroup = async (groupId: string, userId: string) => {
+    const group = await groupModel.findById(groupId);
+    if (!group) throw new Error('Group not found');
+
+    group.members = group.members.filter(member => member.toString() !== userId);
+    if (group.members.length < 4) {
+        group.isFull = false;
+    }
+    await group.save();
+    return { message: 'User left the group' };
+};
+
+export const deleteUserFromGroup = async (groupId: string, userId: string) => {
+    const group = await groupModel.findById(groupId);
+    if (!group) throw new Error('Group not found');
+
+    group.members = group.members.filter(member => member.toString() !== userId);
+    if (group.members.length < 4) {
+        group.isFull = false;
+    }
+
+    await group.save();
+    return { message: 'User removed from group' };
+};
