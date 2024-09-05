@@ -102,8 +102,8 @@ export const createGroupTask = async (body: createGroupTaskBody): Promise<any> =
 
     return newTask;
 };
-export const updateGroupTask = async (taskId: string, updates: Partial<{ title: string; description: string; dueDate: Date; }>): Promise<any> => {
-    const task = await taskModel.findById(taskId);
+export const updateGroupTask = async (id: string, updates: Partial<{ title: string; description: string; dueDate: Date; }>): Promise<any> => {
+    const task = await taskModel.findById(id);
     if (!task) {
       throw new Error('Task not found.');
     }
@@ -112,7 +112,7 @@ export const updateGroupTask = async (taskId: string, updates: Partial<{ title: 
     return task;
   };
 
-  export const completeTask = async (taskId: string, userId: string) => {
+export const completeTask = async (taskId: string, userId: string) => {
     const task = await taskModel.findById(taskId);
     const userObjectId = new mongoose.Types.ObjectId(userId)
     if (!task) throw new Error('Task not found');

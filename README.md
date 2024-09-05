@@ -1,6 +1,6 @@
-# TODO list API
+# HORA API
 
-This project is a Node.js and TypeScript-based API for creating tasks for students and to also enable them collaborate using special features. It includes functionality for creating accountability groups and partners and points for tracking progress.
+This project is a Node.js and TypeScript-based API for managing students productivity and to also enable them collaborate using special features. It includes functionality for creating accountability groups, progress bars, leaderboard and points for tracking progress.
 
 ## Features
 

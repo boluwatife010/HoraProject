@@ -160,7 +160,7 @@ export const resetPassword = async (email: string, newPassword:string, otp:strin
     await user.save();
     return { message: 'Password reset successfully' };
 };
-  export const verifyOTP = async (email: string, otp: string): Promise<any> => {
+export const verifyOTP = async (email: string, otp: string): Promise<any> => {
     const user = await userModel.findOne({
       email,
       resetPasswordToken: otp,
