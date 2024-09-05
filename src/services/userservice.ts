@@ -126,19 +126,19 @@ export const getLeaderboard = async (groupId: string) => {
         dailyCompletedTasks: user.dailyCompletedTasks,
     }));
 };
-export const calculateProgress = async (userId: string) => {
-    const user = await userModel.findById(userId);
-    if (!user) throw new Error('User not found');
+// export const calculateProgress = async (userId: string) => {
+//     const user = await userModel.findById(userId);
+//     if (!user) throw new Error('User not found');
 
-    const totalTasks = 5; 
-    const progress = (user.dailyCompletedTasks / totalTasks) * 100;
+//     const totalTasks = 5; 
+//     const progress = (user.dailyCompletedTasks / totalTasks) * 100;
 
-    return {
-        progress: `${progress}%`,
-        completedTasks: user.dailyCompletedTasks,
-        totalTasks,
-    };
-};
+//     return {
+//         progress: `${progress}%`,
+//         completedTasks: user.dailyCompletedTasks,
+//         totalTasks,
+//     };
+// };
 
 export const resetPassword = async (email: string, newPassword:string, otp:string): Promise<any> => {
     console.log("Resetting password for email:", email);
