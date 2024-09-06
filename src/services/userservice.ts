@@ -15,21 +15,21 @@ export const registerUser = async (body: registerRequestBody):Promise <any> => {
         throw new Error ('This email is already in use!')
     }
     // const hashPassord = await bcrypt.hash(password, 10);
-    const otp = generateOtp();
-    if (!otp) {
+    const onetime = generateOtp();
+    if (!onetime) {
         throw new Error('Could not generate otp')
     }
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-    const createUser = new userModel({ email, password, otp, otpExpires});
-    const token = generateAuthToken((createUser._id as Iuser).toString());
+    const createUser = new userModel({ email, password, onetime, otpExpires});
+    const token = generateAuthToken(createUser._id.toString());
     if (!createUser) {
         throw new Error ('Please validate your details above')
     }
     await createUser.save();
-    await sendEmail(email, 'Verify Your Email', `Your OTP is ${otp}`);
+    await sendEmail(email, 'Verify Your Email', `Your OTP is ${onetime}`);
     return {createUser, token}
 }
-export const verifyEmailOtp = async (email: string, otp: string) => {
+export const verifyEmailOtp = async (email: string, onetime: string) => {
     const user = await userModel.findOne({email});
     if (!user) {
         throw new Error ('Could not find user email')
@@ -37,11 +37,11 @@ export const verifyEmailOtp = async (email: string, otp: string) => {
     if (user.isVerified) {
         throw new Error ('User is already verified');
     }
-    if (user.otp !== otp || user.otpExpires! < new Date()) {
+    if (user.onetime !== onetime || user.otpExpires! < new Date()) {
         throw new Error('Invalid or otp has expired')
       }
     user.isVerified = true;
-    user.otp = null;
+    user.onetime = null;
     user.otpExpires = null;
     await user.save();
     return user
@@ -194,16 +194,20 @@ export const resetPassword = async (email: string, newPassword:string, otp:strin
     return { message: 'Password reset successfully' };
 };
 export const verifyOTP = async (email: string, otp: string): Promise<any> => {
-    const user = await userModel.findOne({
+    try {const user = await userModel.findOne({
       email,
       resetPasswordToken: otp,
-      resetPasswordExpires: { $gt: Date() },
+      resetPasswordExpires: { $gt: new Date() },
     });
   
     if (!user) {
       throw new Error('OTP is invalid or has expired.');
     }
   
-    return { message: 'OTP is valid' };
+    return { message: 'OTP is valid' };} 
+    catch (error) {
+        console.error('Error verifying OTP:', error);
+                throw error;
+      }
   };
   

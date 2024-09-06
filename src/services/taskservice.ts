@@ -2,12 +2,20 @@ import { taskModel } from "../models/taskmodel";
 import cron from 'node-cron'
 import { createTaskRequestBody, searchTaskRequestBody, updateTaskRequestBody } from "../interfaces/task";
 import { userModel } from "../models/usermodel";
+import mongoose from "mongoose";
 export const createTask = async (body: createTaskRequestBody): Promise<any> => {
     const {title, description, dueDate, repeatTask} = body;
     if (!title && !description && !dueDate && !repeatTask) {
         throw new Error ('Please provide the following details.')
     }
-    const newTask = new taskModel({title, description, dueDate, repeatTask})
+    let parsedDueDate: Date | undefined;
+    if (dueDate) {
+        parsedDueDate = new Date(dueDate);
+        if (isNaN(parsedDueDate.getTime())) {
+            throw new Error('Invalid date format.');
+        }
+    }
+    const newTask = new taskModel({title, description, dueDate: parsedDueDate, repeatTask})
     if (!newTask) {
         throw new Error('Could not create a new task, please cross-check your details')
     }

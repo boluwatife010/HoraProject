@@ -1,23 +1,32 @@
 import express from 'express';
 import { createTask, getATask, getAllTasks, updateTask, searchTask, 
     deleteTask, getTasksForDay, updateTaskStatus } from '../services/taskservice';
+import mongoose from 'mongoose';
+
 
 export const createTaskHandler = async (req: express.Request, res: express.Response) => {
-    const {title, description, dueDate, repeatTask} = req.body;
+    const { title, description, dueDate, repeatTask } = req.body;
     try {
-        if (!title && !description && !dueDate && ! repeatTask) {
-            return res.status(400).send({message: 'Please provide the required fields.'})
+        // if (!req.user || !('_id' in req.user)) {
+        //     return res.status(401).send({ message: 'User is not authenticated.' });
+        // }
+        if (!title && !description && !dueDate && !repeatTask) {
+            return res.status(400).send({ message: 'Please provide all required fields.' });
         }
-        const create = await createTask({title, description, dueDate, repeatTask});
-        if (!create) {
-            return res.status(400).send({message: 'Could not create a new task.'})
+        //const userId = (req.user as { _id: mongoose.Types.ObjectId })._id;
+        const createdTask = await createTask({ title, description, dueDate, repeatTask });
+
+        if (!createdTask) {
+            return res.status(400).send({ message: 'Could not create a new task.' });
         }
-        return res.status(200).send({message: 'Successfully created task.', create})
-    }   catch (err) {
-        console.log(err, 'Invalid err');
-        return res.status(500).send({message: 'Internal server error.'}); 
+
+        return res.status(200).send({ message: 'Successfully created task.', createdTask });
+    } catch (err) {
+        console.error('Error creating task:', err);
+        return res.status(500).send({ message: 'Internal server error.' });
     }
-}
+};
+
 export const getTaskHandler = async (req: express.Request, res: express.Response) => {
     const { id } = req.params;
     try {

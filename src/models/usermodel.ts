@@ -34,7 +34,7 @@ const userSchema: Schema<Iuser> = new Schema({
     resetPasswordExpires: { type: Date },
     points: { type: Number, default: 100 },
     dailyCompletedTasks: { type: Number, default: 0 },
-    otp: {type: String, required: false},
+    onetime: {type: String, required: false},
     otpExpires: {type: Date, required: false},
     isVerified: {type: Boolean, required: false}
 })
