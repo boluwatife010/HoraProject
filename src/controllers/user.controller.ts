@@ -1,7 +1,7 @@
 import { body } from "express-validator";
 import { loginUser, registerUser, getAllUsers, 
     getUser, deleteUser, updateUser, forgotPassword, resetPassword, changePassword, 
-    verifyOTP,
+    verifyOTP, verifyEmailOtp,
     calculateProgress} from "../services/userservice";
 import express from 'express';
 
@@ -20,6 +20,22 @@ export const userRegistrationHandler = async (req:express.Request, res: express.
     console.log(err, 'Invalid err');
     return res.status(500).send({message: 'Internal server error.'});
    }
+}
+export const verifyEmailOtpHandler = async (req: express.Request, res: express.Response) => {
+    const {email, otp} = req.body;
+    try {
+        if (!email || !otp) {
+            return res.status(400).send({message: 'Please provide the email and otp.'})
+        }
+        const verify = await verifyEmailOtp(email, otp)
+        if(!verify) {
+            return res.status(400).send({message: 'Could not verify otp :('})
+        }
+        return res.status(200).send({message: 'Successfully verified email! :)'})
+    }   catch (err) {
+        console.log(err, 'Invalid err');
+        return res.status(500).send({message: 'Internal server error.'});
+       }
 }
 export const userLoginHandler = async (req: express.Request, res: express.Response) => {
     const {email, password} = req.body;

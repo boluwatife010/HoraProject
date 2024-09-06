@@ -33,7 +33,10 @@ const userSchema: Schema<Iuser> = new Schema({
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
     points: { type: Number, default: 100 },
-    dailyCompletedTasks: { type: Number, default: 0 }
+    dailyCompletedTasks: { type: Number, default: 0 },
+    otp: {type: String, required: false},
+    otpExpires: {type: Date, required: false},
+    isVerified: {type: Boolean, required: false}
 })
 userSchema.pre<Iuser>('save', async function (next) {
     if (!this.isModified('password')) return next();

@@ -3,6 +3,8 @@ import { registerRequestBody, loginRequestBody, updateUserRequestBody, changePas
 import { generateAuthToken } from "../auth/auth";
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
+import { generateOtp} from "../utils/generateOtp";
+import {sendEmail} from '../utils/sendmail'
 import { taskModel } from "../models/taskmodel";
 
 
@@ -13,13 +15,36 @@ export const registerUser = async (body: registerRequestBody):Promise <any> => {
         throw new Error ('This email is already in use!')
     }
     // const hashPassord = await bcrypt.hash(password, 10);
-    const createUser = new userModel({ email, password});
+    const otp = generateOtp();
+    if (!otp) {
+        throw new Error('Could not generate otp')
+    }
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    const createUser = new userModel({ email, password, otp, otpExpires});
     const token = generateAuthToken((createUser._id as Iuser).toString());
     if (!createUser) {
         throw new Error ('Please validate your details above')
     }
     await createUser.save();
+    await sendEmail(email, 'Verify Your Email', `Your OTP is ${otp}`);
     return {createUser, token}
+}
+export const verifyEmailOtp = async (email: string, otp: string) => {
+    const user = await userModel.findOne({email});
+    if (!user) {
+        throw new Error ('Could not find user email')
+    }
+    if (user.isVerified) {
+        throw new Error ('User is already verified');
+    }
+    if (user.otp !== otp || user.otpExpires! < new Date()) {
+        throw new Error('Invalid or otp has expired')
+      }
+    user.isVerified = true;
+    user.otp = null;
+    user.otpExpires = null;
+    await user.save();
+    return user
 }
 export const loginUser = async (body: loginRequestBody): Promise<any> => {
     const {email, password} = body;

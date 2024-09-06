@@ -7,6 +7,9 @@ export interface Iuser extends Document {
     password: string;
     dailyCompletedTasks:number;
     googleId?: string;
+    otp: string | null;
+    otpExpires: Date | null;
+    isVerified: boolean;
     profilepicture?: string;
     name?: string;
     createdAt: Date;
