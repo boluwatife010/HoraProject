@@ -1,7 +1,8 @@
 import { body } from "express-validator";
 import { loginUser, registerUser, getAllUsers, 
     getUser, deleteUser, updateUser, forgotPassword, resetPassword, changePassword, 
-    verifyOTP} from "../services/userservice";
+    verifyOTP,
+    calculateProgress} from "../services/userservice";
 import express from 'express';
 
 export const userRegistrationHandler = async (req:express.Request, res: express.Response) => {
@@ -93,6 +94,22 @@ export const deleteAUserHandler = async (req: express.Request, res: express.Resp
         }
         return res.status(200).send({message: 'Successfully deleted user.'});
     }    catch (err) {
+        console.log(err, 'Invalid err');
+        return res.status(500).send({message: 'Internal server error.'}); 
+    }
+}
+export const calculateProgressHandler = async (req: express.Request, res: express.Response) => {
+    const {userId} = req.params;
+    try {
+       if (!userId) {
+        return res.status(400).send({message: 'Please provide the following details,'})
+       } 
+       const progress = await calculateProgress(userId);
+       if (!progress) {
+        return res.status(400).send({message: 'Could not calculate user progress'})
+       }
+       return res.status(200).send({message: 'Successfully calculated user progress', progress})
+    }   catch (err) {
         console.log(err, 'Invalid err');
         return res.status(500).send({message: 'Internal server error.'}); 
     }

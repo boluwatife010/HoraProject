@@ -1,5 +1,6 @@
 import express from 'express';
-import { createTask, getATask, getAllTasks, updateTask, searchTask, deleteTask } from '../services/taskservice';
+import { createTask, getATask, getAllTasks, updateTask, searchTask, 
+    deleteTask, getTasksForDay, updateTaskStatus } from '../services/taskservice';
 
 export const createTaskHandler = async (req: express.Request, res: express.Response) => {
     const {title, description, dueDate, repeatTask} = req.body;
@@ -99,6 +100,40 @@ export const deleteTaskHandler = async (req: express.Request, res: express.Respo
             return res.status(400).send({message: 'Could not delete task with id.'})
         }
         return res.status(200).send({message: 'Successfully deleted task.'})
+    }   catch (err) {
+        console.log(err, 'Invalid err');
+        return res.status(500).send({message: 'Internal server error.'}); 
+    }
+}
+export const GetTaskForDayHandler = async (req: express.Request, res: express.Response) => {
+    const {userId} = req.body;
+    const date = req.query.date ? new Date(req.query.date as string): new Date()
+    try {
+        if (!userId || !date) {
+            return res.status(400).send({message: 'Please provide the required details.'})
+        }
+        const tasks = await getTasksForDay(userId, date);
+        if (!tasks) {
+            return res.status(400).send({message: 'Could not get tasks for the day.'})
+        }
+        return res.status(200).send({message: 'Succsessfully got the tasks for the day', tasks});
+    }   catch (err) {
+        console.log(err, 'Invalid err');
+        return res.status(500).send({message: 'Internal server error.'}); 
+    }
+}
+export const updateTaskStatusHandler = async (req: express.Request, res: express.Response) => {
+    const {taskId} = req.params;
+    const {completed} = req.body
+    try {
+        if (!taskId || !completed) {
+            return res.status(400).send({message: 'Please provide the required details'})
+        }
+        const status = await updateTaskStatus(taskId, completed);
+        if (!status) {
+            return res.status(400).send({message: 'Could not update task status'})
+        }
+        return res.status(200).send({message: 'Successfully updated task status', status})
     }   catch (err) {
         console.log(err, 'Invalid err');
         return res.status(500).send({message: 'Internal server error.'}); 

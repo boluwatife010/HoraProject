@@ -4,7 +4,7 @@ import { authenticateToken } from '../auth/auth';
 import { userRegistrationHandler,
      userLoginHandler, updateUserHandler,
      getAUserHandler,deleteAUserHandler, getAllUsersHandler, forgotPasswordHandler,
-      resetPasswordHandler, changePasswordHandler, 
+      resetPasswordHandler, changePasswordHandler, calculateProgressHandler,
       verifyOtpHandler } from '../controllers/user.controller';
 const router = express.Router()
 router.post('/register', userRegistrationHandler );
@@ -16,5 +16,6 @@ router.post('/forgot-password/:id', forgotPasswordHandler);
 router.post('/verify-password/:id', verifyOtpHandler)
 router.get('/:id',authenticateToken,  getAUserHandler );
 router.get('/', getAllUsersHandler);
+router.get('/progress/:userId', calculateProgressHandler)
 router.delete('/delete/:id', authenticateToken,  deleteAUserHandler);
 export default router;

@@ -183,3 +183,11 @@ export const deleteUserFromGroup = async (groupId: string, userId: string) => {
     await group.save();
     return { message: 'User removed from group' };
 };
+export const getLeaderboard = async (groupId: string) => {
+    const users = await userModel.find({ groupId }).sort({ points: -1 });
+    return users.map(user => ({
+        name: user.name,
+        points: user.points,
+        dailyCompletedTasks: user.dailyCompletedTasks,
+    }));
+};
