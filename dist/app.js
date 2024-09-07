@@ -26,7 +26,7 @@ app.use((0, express_session_1.default)({
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
 (0, db_1.default)();
-const PORT = process.env.PORT || 8090;
+const PORT = process.env.PORT || 3000;
 app.use('/user', userroute_1.default);
 app.use('/task', taskroute_1.default);
 app.use('/group', grouproute_1.default);
