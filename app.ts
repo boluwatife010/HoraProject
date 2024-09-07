@@ -22,7 +22,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 connectDb()
-const PORT = process.env.PORT || 8090
+const PORT = process.env.PORT || 3000
 app.use('/user', userRouter);
 app.use('/task', taskRouter);
 app.use('/group', groupRouter)
