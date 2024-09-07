@@ -1,6 +1,6 @@
 import notificationModel from '../models/notificationmodel';
 import nodemailer from 'nodemailer';
-import { Notification } from 'src/interfaces/notification';
+import { Notification } from '../interfaces/notification';
 
 class NotificationService {
   async createNotification(data: Pick<Notification, 'userId' | 'message' | 'status' | 'type'>): Promise<Notification> {

@@ -1,28 +1,18 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "allowJs": true,
-    "skipLibCheck": true,
+    "module": "commonjs",
+    "outDir": "./dist",
+    "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "baseUrl": ".",
-    "noFallthroughCasesInSwitch": true,
-    "outDir": "./dist",
-    "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true
   },
-  "compileOnSave": true,
-  "exclude": [
-    "node_modules/",
-    "build/",
-    "./test",
-    "src/test/*"
-  ],
-  "include": [ "src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "build", "test"]
 }
