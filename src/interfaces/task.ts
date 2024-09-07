@@ -5,7 +5,8 @@ export interface Task {
     description: string;
     dueDate: Date;
     completed: boolean;
-    completedBy: mongoose.Types.ObjectId[]
+    completedBy: mongoose.Types.ObjectId[];
+    createdBy: string;
     completedAt: Date;
     repeatTask: 'daily' | 'weekly' | 'monthly' | 'none';
     createdAt: Date;
@@ -15,6 +16,7 @@ export interface createTaskRequestBody {
     title: string;
     description: string;
     dueDate?: Date;
+    createdBy: mongoose.Schema.Types.ObjectId;
     repeatTask?:  'daily' | 'weekly' | 'monthly' | 'none'
 
 }

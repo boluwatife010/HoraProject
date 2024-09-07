@@ -8,6 +8,11 @@ export interface Group extends Document {
     createdAt: Date;
     expiresAt: Date;
 }
+export interface updateGroupRequest {
+    title: string;
+    description: string;
+    dueDate: Date;
+}
 export interface Invitation extends Document{
     email: string;
     groupId: mongoose.Schema.Types.ObjectId[];

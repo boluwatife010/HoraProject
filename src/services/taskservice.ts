@@ -4,8 +4,8 @@ import { createTaskRequestBody, searchTaskRequestBody, updateTaskRequestBody } f
 import { userModel } from "../models/usermodel";
 import mongoose from "mongoose";
 export const createTask = async (body: createTaskRequestBody): Promise<any> => {
-    const {title, description, dueDate, repeatTask} = body;
-    if (!title && !description && !dueDate && !repeatTask) {
+    const {title, description, dueDate, repeatTask, createdBy} = body;
+    if (!title && !description && !dueDate && !repeatTask && !createdBy) {
         throw new Error ('Please provide the following details.')
     }
     let parsedDueDate: Date | undefined;
@@ -15,7 +15,7 @@ export const createTask = async (body: createTaskRequestBody): Promise<any> => {
             throw new Error('Invalid date format.');
         }
     }
-    const newTask = new taskModel({title, description, dueDate: parsedDueDate, repeatTask})
+    const newTask = new taskModel({title, description, dueDate: parsedDueDate, repeatTask, createdBy})
     if (!newTask) {
         throw new Error('Could not create a new task, please cross-check your details')
     }
@@ -23,6 +23,9 @@ export const createTask = async (body: createTaskRequestBody): Promise<any> => {
     return newTask ;
 }
 export const getATask = async (id: string): Promise<any> => {
+    // if (!mongoose.Types.ObjectId.isValid(id)) {
+    //     throw new Error('Invalid task ID');
+    // }
     const task = await taskModel.findById(id);
     if (!task) {
         throw new Error ('Could not find task with this id.')
@@ -52,13 +55,12 @@ export const updateTask = async (id: string, body: updateTaskRequestBody): Promi
     }
     return updates;
 }
-export const searchTask = async (id: string, body: searchTaskRequestBody): Promise<any> => {
+export const searchTask = async ( body: searchTaskRequestBody): Promise<any> => {
     const {keyword, dueDate} = body;
     if (!keyword || !dueDate) {
         throw new Error ('Please provide a valid keyword');
     }
     const search = await taskModel.findOne({
-        id,
         title: { $regex: keyword, $options: 'i' },
         dueDate: { $gte: dueDate}
     })

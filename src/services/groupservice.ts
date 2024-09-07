@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 import mongoose, { Types } from "mongoose";
 import { taskModel } from "../models/taskmodel";
 import { userModel } from "../models/usermodel";
-import { createGroupTaskBody, invitationRequestBody } from "../interfaces/group";
+import { createGroupTaskBody, invitationRequestBody, updateGroupRequest } from "../interfaces/group";
 import {v4 as uuidv4} from 'uuid';
 
 export const createGroup = async (groupName:string, userId: string):Promise<any> => {
@@ -63,6 +63,9 @@ export const createLink = async (body: invitationRequestBody)=> {
 }
 export const joinGroup = async (userId: string, inviteLink: string): Promise<any> => {
     const userObjectId = new Types.ObjectId(userId);
+    if (!Types.ObjectId.isValid(userId)) {
+        throw new Error('Invalid user ID format');
+    }
     const group = await groupModel.findOne({inviteLink})
     if (!group) {
         throw new Error('Invalid invite link');
@@ -81,7 +84,7 @@ export const joinGroup = async (userId: string, inviteLink: string): Promise<any
 export const createGroupTask = async (body: createGroupTaskBody): Promise<any> => {
     const { title, groupId, description, dueDate } = body;
 
-    if (!groupId || !title || !description || !dueDate) {
+    if (!groupId && !title && !description && !dueDate) {
         throw new Error('Please provide all the required details');
     }
     const groupObjectId = new Types.ObjectId(groupId);
@@ -102,8 +105,8 @@ export const createGroupTask = async (body: createGroupTaskBody): Promise<any> =
 
     return newTask;
 };
-export const updateGroupTask = async (id: string, updates: Partial<{ title: string; description: string; dueDate: Date; }>): Promise<any> => {
-    const task = await taskModel.findById(id);
+export const updateGroupTask = async (groupId: string, updates: updateGroupRequest): Promise<any> => {
+    const task = await taskModel.findByIdAndUpdate(groupId);
     if (!task) {
       throw new Error('Task not found.');
     }
@@ -132,8 +135,8 @@ export const completeTask = async (taskId: string, userId: string) => {
     return task;
 };
 
-export const getGroupTask = async (groupId: string, taskId: string) => {
-    const group = await groupModel.findById(groupId).populate('tasks');
+export const getGroupTask = async ( taskId: string) => {
+    const group = await groupModel.findById(taskId).populate('tasks');
     if (!group) throw new Error('Group not found');
 
     const task = group.tasks.find(task => task._id.toString() === taskId);

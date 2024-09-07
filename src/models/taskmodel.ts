@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Task } from 'src/interfaces/task';
+import { Task } from '../interfaces/task';
 const Schema = mongoose.Schema
 const taskSchema = new Schema({
     title : {
@@ -26,7 +26,7 @@ const taskSchema = new Schema({
     groupId: { type: Schema.Types.ObjectId, 
         ref: 'Group' },
     createdBy: { type: Schema.Types.ObjectId, 
-        ref: 'User', required: false},
+        ref: 'User', required: true},
     completedAt: {
         type: Date
     },

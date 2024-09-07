@@ -76,7 +76,7 @@ This project is a Node.js and TypeScript-based API for managing students product
 
 ## API Documentation
 
-For detailed API documentation, please refer to the [API Documentation]() on Postman.
+For detailed API documentation, please refer to the [API Documentation](https://documenter.getpostman.com/view/29099038/2sAXjRVotE) on Postman.
 
 ## License
 

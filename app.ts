@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 import userRouter from './src/routers/userroute' 
 import taskRouter from './src/routers/taskroute';
 import authRouter from './src/routers/authroute';
-import groupRouter from './src/routers/notificationrouter'
+import groupRouter from './src/routers/grouproute'
 import connectDb from './db';
 import notificationRouter from './src/routers/notificationrouter'
 dotenv.config()

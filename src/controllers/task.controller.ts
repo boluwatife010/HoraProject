@@ -5,16 +5,12 @@ import mongoose from 'mongoose';
 
 
 export const createTaskHandler = async (req: express.Request, res: express.Response) => {
-    const { title, description, dueDate, repeatTask } = req.body;
+    const { title, description, dueDate, repeatTask, createdBy } = req.body;
     try {
-        // if (!req.user || !('_id' in req.user)) {
-        //     return res.status(401).send({ message: 'User is not authenticated.' });
-        // }
         if (!title && !description && !dueDate && !repeatTask) {
             return res.status(400).send({ message: 'Please provide all required fields.' });
         }
-        //const userId = (req.user as { _id: mongoose.Types.ObjectId })._id;
-        const createdTask = await createTask({ title, description, dueDate, repeatTask });
+        const createdTask = await createTask({ title, description, dueDate, repeatTask, createdBy});
 
         if (!createdTask) {
             return res.status(400).send({ message: 'Could not create a new task.' });
@@ -78,7 +74,6 @@ export const updateTaskHandler = async (req: express.Request, res: express.Respo
 export const searchTaskHandler = async (req: express.Request, res: express.Response) => {
     const keyword = req.query.keyword as string;
     const dueDateString = req.query.dueDate as string ;
-    const {id} = req.params;
     try {
         if (!keyword || !dueDateString) {
             return res.status(400).send({message: 'Could not find the above in the query'});
@@ -87,7 +82,7 @@ export const searchTaskHandler = async (req: express.Request, res: express.Respo
         if (isNaN(dueDate.getTime())) {
             return res.status(400).send({ message: 'Invalid date format. Please provide a valid date.' });
         }
-        const search = await searchTask(id, {keyword, dueDate});
+        const search = await searchTask({keyword, dueDate});
         if (search) {
             return res.status(200).send({ message: 'Task found', task: search });
         } else {

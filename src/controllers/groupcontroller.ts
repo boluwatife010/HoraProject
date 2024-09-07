@@ -42,7 +42,7 @@ export const joinGroupHandler = async (req: express.Request, res: express.Respon
         if (!userId || !inviteLink) {
             return res.status(400).send({message: 'Please provide the following details'})
         }
-        const join = await joinGroup(inviteLink, userId) 
+        const join = await joinGroup(userId, inviteLink) 
         if (!join) {
             return res.status(400).send({message: 'Could not join group successfully'})
         }
@@ -71,15 +71,15 @@ export const createGroupTaskHandler = async (req: express.Request, res: express.
 }
 export const updateGroupTaskHandler = async (req: express.Request, res: express.Response) => {
     const {title, description, dueDate} = req.body
-    const {id} = req.params
+    const {groupId} = req.params
     try {
-        if (!id) {
+        if (!groupId) {
             return res.status(400).send({message: 'Please provide a valid id.'});
         }
         if (!title || !description || !dueDate) {
             return res.status(400).send({message: 'Please provide the following details'});
         }
-        const updating = await updateGroupTask(id, {title, description, dueDate})
+        const updating = await updateGroupTask(groupId, {title, description, dueDate})
     }   catch (err) {
         console.log(err, 'Invalid err');
         return res.status(500).send({message: 'Internal server error.'}); 
@@ -102,12 +102,12 @@ export const completeTaskHandler = async (req: express.Request, res: express.Res
     }
 }
 export const getGroupTaskHandler = async (req: express.Request, res: express.Response) => {
-    const {groupId, taskId} = req.params
+    const { taskId} = req.params
     try {
-        if (!groupId || !taskId) {
+        if ( !taskId) {
             return res.status(400).send({message: 'Please provide the following details'})
         }
-        const getTasks = await getGroupTask(taskId, groupId)
+        const getTasks = await getGroupTask(taskId)
         if (!getTasks) {
             return res.status(200).send({message: 'Could not get group tasks'})
         }
@@ -152,7 +152,7 @@ export const leaveGroupHandler = async (req: express.Request, res: express.Respo
     const {groupId} = req.params
     const { userId} = req.body.userId
     try {
-        if (!groupId || !userId) {
+        if (!groupId && !userId) {
             return res.status(400).send({message: 'Please update the following fields'})
         }
         const leave = await leaveGroup(groupId, userId)
