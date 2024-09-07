@@ -1,5 +1,5 @@
 import { userModel } from "../models/usermodel";
-import { registerRequestBody, loginRequestBody, updateUserRequestBody, changePasswordRequestBody, Iuser} from "src/interfaces/user";
+import { registerRequestBody, loginRequestBody, updateUserRequestBody, changePasswordRequestBody, Iuser} from "../interfaces/user";
 import { generateAuthToken } from "../auth/auth";
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
