@@ -16,6 +16,7 @@
       "outDir": "./dist",
       "noUnusedLocals": false,
       "noUnusedParameters": false,
+      "types": ["node"]
     },
     "compileOnSave": true,
     "exclude": [
