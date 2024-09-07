@@ -12,7 +12,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "types": ["node", "express", "jsonwebtoken", "passport", "uuid", "nodemailer", "bcryptjs"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "build", "test"]
