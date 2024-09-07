@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+      "types": ["node"],
       "target": "es2017",
       "allowJs": true,
       "skipLibCheck": true,
@@ -16,7 +17,6 @@
       "outDir": "./dist",
       "noUnusedLocals": false,
       "noUnusedParameters": false,
-      "types": ["node"]
     },
     "compileOnSave": true,
     "exclude": [
