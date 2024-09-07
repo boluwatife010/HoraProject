@@ -20,7 +20,6 @@
   "compileOnSave": true,
   "exclude": [
     "node_modules/",
-    "dist/",
     "build/",
     "./test",
     "src/test/*"
