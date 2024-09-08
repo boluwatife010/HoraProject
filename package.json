@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "npm install --only=dev && tsc",
-    "start": "ts-node app.ts"
+    "start": "node dist/app.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

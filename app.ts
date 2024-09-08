@@ -29,6 +29,6 @@ app.use('/group', groupRouter)
 app.use ('/api', notificationRouter)
 app.use ('/api/auth', authRouter)
 app.listen(PORT, async () => {
-    console.log('Server is running at port 8090.')
+    console.log('Server is running at port 3000.')
    
 })
