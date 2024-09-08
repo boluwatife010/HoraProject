@@ -11,6 +11,9 @@ const userSchema: Schema<Iuser> = new Schema({
         validate: [validator.isEmail, 'This is not a valid email.'],
         lowercase: true
     },
+    streakCount: { type: Number, default: 0 },
+    lastLoginDate: { type: Date, default: null },
+    maxStreak: { type: Number, default: 0 },
     password: {type: String,
         required: function () {
             return !this.googleId

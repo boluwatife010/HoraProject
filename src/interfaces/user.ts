@@ -6,6 +6,9 @@ export interface Iuser extends Document {
     points: number;
     email: string;
     password: string;
+    streakCount: number;
+    lastLoginDate: Date;
+    maxStreak: number;
     dailyCompletedTasks:number;
     googleId?: string;
     onetime: string | null;

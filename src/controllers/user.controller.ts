@@ -1,7 +1,7 @@
 import { body } from "express-validator";
 import { loginUser, registerUser, getAllUsers, 
     getUser, deleteUser, updateUser, forgotPassword, resetPassword, changePassword, 
-    verifyOTP, verifyEmailOtp,
+    verifyOTP, verifyEmailOtp, updateStreak,
     calculateProgress} from "../services/userservice";
 import express from 'express';
 

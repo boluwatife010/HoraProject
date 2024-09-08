@@ -2,11 +2,21 @@ import { userModel } from "../models/usermodel";
 import { registerRequestBody, loginRequestBody, updateUserRequestBody, changePasswordRequestBody, Iuser} from "../interfaces/user";
 import { generateAuthToken } from "../auth/auth";
 import bcrypt from 'bcryptjs';
+import {google} from 'googleapis'
 import nodemailer from 'nodemailer';
 import { generateOtp} from "../utils/generateOtp";
 import {sendEmail} from '../utils/sendmail'
 import { taskModel } from "../models/taskmodel";
 
+import { OAuth2Client } from 'google-auth-library';
+const oauth2Client = new OAuth2Client(
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  "https://developers.google.com/oauthplayground"
+);
+oauth2Client.setCredentials({
+  refresh_token: process.env.REFRESH_TOKEN,
+});
 
 export const registerUser = async (body: registerRequestBody):Promise <any> => {
     const {email, password} = body;
@@ -56,7 +66,11 @@ export const loginUser = async (body: loginRequestBody): Promise<any> => {
     if (!comparing) {
         throw new Error ('Invalid password used.')
     }
-    //const token = generateAuthToken((login._id as Iuser).toString());
+    try {
+      await updateStreak(login._id.toString());
+  } catch (err) {
+      console.error('Error updating streak:', err);
+  }
     return {login};
 }
 export const updateUser = async (body: updateUserRequestBody, id: string): Promise<any> => {
@@ -81,14 +95,14 @@ export const getUser = async (id: string): Promise<any> => {
     if (!user) {
         throw new Error ('User not found.')
     }
-    return user;
+    return {user};
 }
 export const getAllUsers = async (): Promise<any> => {
     const all = await userModel.find();
     if (!all) {
         throw new Error ('Could not get all users.')
     }
-    return all;
+    return {all};
 }
 export const deleteUser = async (id: string): Promise<any> => {
     const deleting = await userModel.findByIdAndDelete(id);
@@ -112,38 +126,38 @@ export const changePassword = async (id: string, body: changePasswordRequestBody
     return {message: 'Password changed successfully.'}
 }
 export const forgotPassword = async (email: string): Promise<any> => {
-    const user = await userModel.findOne({email});
+    const user = await userModel.findOne({ email });
     if (!user) {
-        throw new Error ('User with this email is not found')
+      throw new Error('User with this email is not found');
     }
-    const otp = Math.floor(100000 + Math.random() * 900000).toString(); 
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
     user.resetPasswordToken = otp;
-    user.resetPasswordExpires = new Date(Date.now() + 3600000); 
+    user.resetPasswordExpires = new Date(Date.now() + 3600000); // OTP expires in 1 hour
     await user.save();
     console.log(`Generated OTP for ${email}: ${otp}`);
-    await user.save();
+    const accessToken = await oauth2Client.getAccessToken();
     const transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        auth : {
-            type: 'OAuth2',
-            user: process.env.EMAIL_USER,
-            clientId: process.env.CLIENT_ID,
-            clientSecret: process.env.CLIENT_SECRET,
-            refreshToken: process.env.REFRESH_TOKEN,
-            //accessToken: oauth2Client.getAccessToken(),
-
-        }
-    })
+      service: 'gmail', 
+      auth: {
+        type: 'OAuth2',
+        user: process.env.EMAIL_USER,
+        clientId: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+        refreshToken: process.env.REFRESH_TOKEN,
+        accessToken: accessToken.token ?? "",
+      },
+    });
     const mailOptions = {
-        to: user.email,
-        from: 'yourapp@example.com',
-        subject: 'Password Reset OTP',
-        text: `Your OTP for password reset is: ${otp}`,
-    }
+      to: user.email,
+      from: 'yourapp@example.com',
+      subject: 'Password Reset OTP',
+      text: `Your OTP for password reset is: ${otp}`,
+    };
+  
     await transporter.sendMail(mailOptions);
-
+  
     return { message: 'OTP sent to email' };
-}
+  };
 export const calculateProgress = async (userId: string) => {
     const user = await userModel.findById(userId);
     if (!user) throw new Error('User not found');
@@ -210,4 +224,31 @@ export const verifyOTP = async (email: string, otp: string): Promise<any> => {
                 throw error;
       }
   };
+  export const updateStreak = async (userId: string): Promise<void> => {
+    const user = await userModel.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const today = new Date();
+    const lastLogin = user.lastLoginDate ? new Date(user.lastLoginDate) : null;
+    if (lastLogin) {
+      const differenceInTime = today.getTime() - lastLogin.getTime();
+      const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
+      if (differenceInDays === 1) {
+        user.streakCount += 1;
+      } else if (differenceInDays > 1) {
+        user.streakCount = 0;
+      }
+    } else {
+      user.streakCount = 1;
+    }
+    user.lastLoginDate = today;
+  
+    if (user.streakCount > user.maxStreak) {
+      user.maxStreak = user.streakCount;
+    }
+  
+    await user.save();
+  };
+  
   
