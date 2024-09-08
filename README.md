@@ -4,7 +4,10 @@ This project is a Node.js and TypeScript-based API for managing students product
 
 ## Features
 
-- Get Specific weathers from different cities across the world
+- Accountability groups
+- Progress tracking
+- Task management
+- Leaderboard
 
 ## Technologies Used
 
