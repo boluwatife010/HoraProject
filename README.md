@@ -43,12 +43,16 @@ This project is a Node.js and TypeScript-based API for managing students product
 3. Create a `.env` file in the root of the project and add your environment variables:
 
     ```env
-    MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/mydatabase?retryWrites=true&w=majority
-    PORT=8090
-    JWT_SECRET=your jwt secret
-    CLIENT_ID=Your google client id
-    CLIENT_SECRET=Your your client secret
-    SESSION_SECRET=Your session secret
+    CLIENT_ID=<clientid>
+    CLIENT_SECRET=<clientsecret>
+    SESSION_SECRET=<sessionsecret>
+    PORT=3000
+    JWT_SECRET=<jwtsecret>
+    MONGODB_URL=<mongodburl>
+    FRONTEND_URL=<frontendurl>
+    EMAIL_USER=<email>
+    EMAIL_PASS=<emailpassword>
+    REFRESH_TOKEN=<refreshtoken>
     ```
 
 4. Start the server:
