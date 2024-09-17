@@ -126,25 +126,30 @@ export const changePassword = async (id: string, body: changePasswordRequestBody
     return {message: 'Password changed successfully.'}
 }
 export const forgotPassword = async (email: string): Promise<any> => {
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      throw new Error('User with this email is not found');
+  const user = await userModel.findOne({ email });
+  if (!user) {
+    throw new Error('User with this email is not found');
+  }
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  user.resetPasswordToken = otp;
+  user.resetPasswordExpires = new Date(Date.now() + 3600000); 
+  await user.save();
+  console.log(`Generated OTP for ${email}: ${otp}`);
+  try {
+    const { token: accessToken } = await oauth2Client.getAccessToken();
+    
+    if (!accessToken) {
+      throw new Error('Failed to generate access token.');
     }
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    user.resetPasswordToken = otp;
-    user.resetPasswordExpires = new Date(Date.now() + 3600000); // OTP expires in 1 hour
-    await user.save();
-    console.log(`Generated OTP for ${email}: ${otp}`);
-    const accessToken = await oauth2Client.getAccessToken();
     const transporter = nodemailer.createTransport({
-      service: 'gmail', 
+      service: 'gmail',
       auth: {
         type: 'OAuth2',
         user: process.env.EMAIL_USER,
         clientId: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
         refreshToken: process.env.REFRESH_TOKEN,
-        accessToken: accessToken.token ?? "",
+        accessToken,
       },
     });
     const mailOptions = {
@@ -153,11 +158,14 @@ export const forgotPassword = async (email: string): Promise<any> => {
       subject: 'Password Reset OTP',
       text: `Your OTP for password reset is: ${otp}`,
     };
-  
     await transporter.sendMail(mailOptions);
-  
+
     return { message: 'OTP sent to email' };
-  };
+  } catch (err) {
+    console.error('Error sending OTP email:', err);
+    throw new Error('Failed to send OTP email. Please try again later.');
+  }
+};
 export const calculateProgress = async (userId: string) => {
     const user = await userModel.findById(userId);
     if (!user) throw new Error('User not found');
