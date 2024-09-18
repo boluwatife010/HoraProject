@@ -8,7 +8,7 @@ router.get('/:id', getTaskHandler);
 router.get('/', getTasksHandler);
 router.get('/search', searchTaskHandler);
 router.delete('/delete/:id', deleteTaskHandler);
-router.get('/today/:userId', GetTaskForDayHandler )
+router.get('/today/', GetTaskForDayHandler )
 router.patch('/status/:taskId', updateTaskStatusHandler)
 
 export default router;

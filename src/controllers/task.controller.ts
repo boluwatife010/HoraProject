@@ -113,7 +113,7 @@ export const GetTaskForDayHandler = async (req: express.Request, res: express.Re
     const {userId} = req.body;
     const date = req.query.date ? new Date(req.query.date as string): new Date()
     try {
-        if (!userId || !date) {
+        if (!userId && !date) {
             return res.status(400).send({message: 'Please provide the required details.'})
         }
         const tasks = await getTasksForDay(userId, date);
