@@ -26,5 +26,5 @@ export interface updateTaskRequestBody {
 }
 export interface searchTaskRequestBody {
     keyword: string;
-    dueDate: Date
+    dueDate: Date | undefined
 }

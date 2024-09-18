@@ -6,9 +6,9 @@ router.post('/create', createTaskHandler);
 router.put('/update/:id', updateTaskHandler);
 router.get('/:id', getTaskHandler);
 router.get('/', getTasksHandler);
-router.get('/search', searchTaskHandler);
+router.get('/search/:id', searchTaskHandler);
 router.delete('/delete/:id', deleteTaskHandler);
-router.get('/today/', GetTaskForDayHandler )
+router.get('/today/:id', GetTaskForDayHandler )
 router.patch('/status/:taskId', updateTaskStatusHandler)
 
 export default router;

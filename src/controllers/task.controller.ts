@@ -73,14 +73,17 @@ export const updateTaskHandler = async (req: express.Request, res: express.Respo
 }
 export const searchTaskHandler = async (req: express.Request, res: express.Response) => {
     const keyword = req.query.keyword as string;
-    const dueDateString = req.query.dueDate as string ;
+    const dueDateString = req.query.dueDate as string | undefined ;
     try {
-        if (!keyword || !dueDateString) {
+        if (!keyword ) {
             return res.status(400).send({message: 'Could not find the above in the query'});
         }
-        const dueDate = new Date(dueDateString)
-        if (isNaN(dueDate.getTime())) {
-            return res.status(400).send({ message: 'Invalid date format. Please provide a valid date.' });
+         let dueDate: Date | undefined;
+        if (dueDateString) {
+            dueDate = new Date(dueDateString);
+            if (isNaN(dueDate.getTime())) {
+                return res.status(400).send({ message: 'Invalid date format. Please provide a valid date.' });
+            }
         }
         const search = await searchTask({keyword, dueDate});
         if (search) {

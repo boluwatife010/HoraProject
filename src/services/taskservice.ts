@@ -57,16 +57,26 @@ export const updateTask = async (id: string, body: updateTaskRequestBody): Promi
 }
 export const searchTask = async ( body: searchTaskRequestBody): Promise<any> => {
     const {keyword, dueDate} = body;
-    if (!keyword || !dueDate) {
-        throw new Error ('Please provide a valid keyword');
+    if (!keyword ) {
+        throw new Error ('Please provide a valid keyword and date');
     }
-    const search = await taskModel.findOne({
-        title: { $regex: keyword, $options: 'i' },
-        dueDate: { $gte: dueDate}
-    })
+    const query: any = {
+        title: { $regex: keyword, $options: 'i' } 
+    };
+
+    if (dueDate) {
+        const parsedDueDate = new Date(dueDate);
+        if (isNaN(parsedDueDate.getTime())) {
+            throw new Error('Invalid date provided.');
+        }
+        query.dueDate = { $gte: parsedDueDate }; 
+    }
+    const search = await taskModel.findOne(query);
+
     if (!search) {
-        throw new Error ('Could not find the following task')
+        throw new Error('Could not find a task matching the provided criteria.');
     }
+
     return search;
 }
 export const deleteTask = async (id: string): Promise<any> => {
