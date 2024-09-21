@@ -80,6 +80,10 @@ export const updateGroupTaskHandler = async (req: express.Request, res: express.
             return res.status(400).send({message: 'Please provide the following details'});
         }
         const updating = await updateGroupTask(groupId, {title, description, dueDate})
+        if (!updating) {
+            return res.status(400).send({message: 'Could not update the task'})
+        }
+        return res.status(200).send({message: 'Successfully updated task', updating})
     }   catch (err) {
         console.log(err, 'Invalid err');
         return res.status(500).send({message: 'Internal server error.'}); 
@@ -102,21 +106,20 @@ export const completeTaskHandler = async (req: express.Request, res: express.Res
     }
 }
 export const getGroupTaskHandler = async (req: express.Request, res: express.Response) => {
-    const { taskId} = req.params
+    const { groupId, taskId } = req.params;
+
     try {
-        if ( !taskId) {
-            return res.status(400).send({message: 'Please provide the following details'})
+        if (!groupId || !taskId) {
+            return res.status(400).send({ message: 'Please provide both groupId and taskId.' });
         }
-        const getTasks = await getGroupTask(taskId)
-        if (!getTasks) {
-            return res.status(200).send({message: 'Could not get group tasks'})
-        }
-        return res.status(200).send({message: 'Successfully got all tasks'})
-    }   catch (err) {
+        const task = await getGroupTask(groupId, taskId);
+        return res.status(200).send({ message: 'Successfully got the task', task });
+    } catch (err) {
         console.log(err, 'Invalid err');
-        return res.status(500).send({message: 'Internal server error.'}); 
+        return res.status(500).send({ message: 'Internal server error.' });
     }
-}
+};
+
 export const getAllGroupTasksHandler = async (req: express.Request, res: express.Response) => {
     const {groupId} = req.params
     try {
@@ -141,8 +144,9 @@ export const deleteGroupTaskHandler = async (req: express.Request, res: express.
         }
         const deleteTask = await deleteGroupTask(groupId, taskId)
         if (!deleteTask) {
-            return res.status(400).send({message: ''})
+            return res.status(400).send({message: 'Could not delete task'})
         }
+        return res.status(200).send({message: 'Successfully deleted task', deleteTask})
     }   catch (err) {
         console.log(err, 'Invalid err');
         return res.status(500).send({message: 'Internal server error.'}); 

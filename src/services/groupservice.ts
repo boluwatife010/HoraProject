@@ -106,12 +106,12 @@ export const createGroupTask = async (body: createGroupTaskBody): Promise<any> =
     return newTask;
 };
 export const updateGroupTask = async (groupId: string, updates: updateGroupRequest): Promise<any> => {
-    const task = await taskModel.findByIdAndUpdate(groupId);
+    const task = await taskModel.findByIdAndUpdate(groupId, updates, {new: true});
     if (!task) {
       throw new Error('Task not found.');
     }
-    Object.assign(task, updates);
-    await task.save();
+    // Object.assign(task, updates);
+    // await task.save();
     return task;
   };
 
@@ -135,15 +135,15 @@ export const completeTask = async (taskId: string, userId: string) => {
     return task;
 };
 
-export const getGroupTask = async ( taskId: string) => {
-    const group = await groupModel.findById(taskId).populate('tasks');
+export const getGroupTask = async (groupId: string, taskId: string) => {
+    const group = await groupModel.findById(groupId).populate('tasks');
     if (!group) throw new Error('Group not found');
-
     const task = group.tasks.find(task => task._id.toString() === taskId);
     if (!task) throw new Error('Task not found');
 
     return task;
 };
+
 
 export const getAllGroupTasks = async (groupId: string) => {
     const group = await groupModel.findById(groupId).populate('tasks');
