@@ -22,13 +22,13 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 connectDb()
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 5173
 app.use('/user', userRouter);
 app.use('/task', taskRouter);
 app.use('/group', groupRouter)
 app.use ('/api', notificationRouter)
 app.use ('/api/auth', authRouter)
 app.listen(PORT, async () => {
-    console.log('Server is running at port 3000.')
+    console.log('Server is running at port 5173.')
    
 })
