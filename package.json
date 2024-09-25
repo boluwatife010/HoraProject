@@ -2,7 +2,7 @@
   "name": "hora",
   "version": "1.0.0",
   "scripts": {
-    "build": "npm install --only=dev && tsc",
+    "build": "tsc", 
     "start": "node dist/app.js"
   },
   "dependencies": {
@@ -43,3 +43,5 @@
     "typescript": "5.5.4"
   }
 }
+
+
