@@ -21,13 +21,14 @@ const userSchema: Schema<Iuser> = new Schema({
         bcrypt: true,
         minlength: [6, 'Your minimum length of character is 6.'],
         rounds: 10},
-        // username: {type: String,
-        //     required: function () {
-        //         return !this.googleId
-        //     },
-        //     min:[3, 'Your username should be 3 characters long.'], 
-        //     max: [20, 'Your useername should  be less than 20 characters.']
-        // },
+    username: {type: String,
+      required: function () {
+            return !this.googleId
+        },
+        unique: true,
+        min:[3, 'Your username should be 3 characters long.'], 
+        max: [20, 'Your useername should  be less than 20 characters.']
+      },
     googleId: {type: String},
     name: {type: String},
     profilepicture: {type:String},

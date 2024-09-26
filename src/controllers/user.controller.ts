@@ -6,12 +6,12 @@ import { loginUser, registerUser, getAllUsers,
 import express from 'express';
 
 export const userRegistrationHandler = async (req:express.Request, res: express.Response) => {
-    const {email, password} = req.body;
+    const {email, password, username} = req.body;
     try {
     if (!email || !password ) {
         return res.status(400).send({message: 'Please fill in the required fields.'});
     }
-    const register = await registerUser({email, password});
+    const register = await registerUser({email, password, username});
     if (!register) {
         return res.status(400).send({message: 'Cross-check your details please.'});
     }
@@ -38,12 +38,12 @@ export const verifyEmailOtpHandler = async (req: express.Request, res: express.R
        }
 }
 export const userLoginHandler = async (req: express.Request, res: express.Response) => {
-    const {email, password} = req.body;
+    const {email, password, username} = req.body;
     try {
         if (!email || !password) {
             return res.status(400).send({message: 'Please fill in the required fields.'});
         }
-        const login = await loginUser({email, password});
+        const login = await loginUser({email, password, username});
         if (!login) {
             return res.status(400).send({message: 'Could not find user with this details'});
         }
@@ -54,13 +54,13 @@ export const userLoginHandler = async (req: express.Request, res: express.Respon
     }
 }
 export const updateUserHandler = async (req: express.Request, res: express.Response) => {
-    const {email, password} = req.body;
+    const {email, password, username} = req.body;
     const {id} = req.params;
     try {
-        if (!email || !password ) {
+        if (!email || !password && !username) {
             return res.status(400).send({message: 'Please update one of the required fields.'});
         };
-        const update = await updateUser({email, password}, id);
+        const update = await updateUser({email, password, username}, id);
         if (!update) {
             return res.status(400).send({message: 'Could not update user.'});
         }

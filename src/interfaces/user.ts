@@ -31,14 +31,17 @@ export interface User {
 export interface registerRequestBody {
     email: string,
     password: string,
+    username: string
 }
 export interface loginRequestBody {
     email: string,
-    password: string
+    password: string;
+    username: string
 }
 export interface updateUserRequestBody {
     email: string,
-    password: string
+    password: string;
+    username: string
 }
 export interface changePasswordRequestBody {
     oldPassword: string,

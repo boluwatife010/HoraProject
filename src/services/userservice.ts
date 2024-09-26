@@ -19,7 +19,7 @@ oauth2Client.setCredentials({
 });
 
 export const registerUser = async (body: registerRequestBody):Promise <any> => {
-    const {email, password} = body;
+    const {email, password, username} = body;
     const existingUser = await userModel.findOne({email});
     if (existingUser) {
         throw new Error ('This email is already in use!')
@@ -30,7 +30,7 @@ export const registerUser = async (body: registerRequestBody):Promise <any> => {
         throw new Error('Could not generate otp')
     }
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-    const createUser = new userModel({ email, password, onetime, otpExpires});
+    const createUser = new userModel({ email, password, onetime, otpExpires, username});
     const token = generateAuthToken(createUser._id.toString());
     if (!createUser) {
         throw new Error ('Please validate your details above')
@@ -57,8 +57,8 @@ export const verifyEmailOtp = async (email: string, onetime: string) => {
     return user
 }
 export const loginUser = async (body: loginRequestBody): Promise<any> => {
-    const {email, password} = body;
-    const login = await userModel.findOne({email})
+    const {email, password, username} = body;
+    const login = await userModel.findOne({email, username})
     if (!login) {
         throw new Error ('Could not log the user in')
     }
@@ -74,13 +74,16 @@ export const loginUser = async (body: loginRequestBody): Promise<any> => {
     return {login};
 }
 export const updateUser = async (body: updateUserRequestBody, id: string): Promise<any> => {
-    const {email, password} =  body;
+    const {email, password, username} =  body;
     const update = await userModel.findById(id);
     if (!update) {
         throw new Error ('Please provide a valid id');
     }
     if (email) {
         update.email = email
+    }
+    if (username) {
+      update.username = username
     }
     if (password) {
         update.password = password;

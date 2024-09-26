@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/create', createGroupHandler);
 router.post('/join', joinGroupHandler)
 router.post('/new-task', createGroupTaskHandler);
-router.put('/update-task/:groupId', updateGroupTaskHandler);
+router.put('/update-task/:taskId', updateGroupTaskHandler);
 router.post('/send-link', createLinkHandler);
 router.post('/:groupId/leave', leaveGroupHandler);
 router.get('/:groupId/task/:taskId', getGroupTaskHandler);
