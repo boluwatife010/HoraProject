@@ -2,13 +2,14 @@
   "name": "hora",
   "version": "1.0.0",
   "scripts": {
-    "build": "tsc", 
+    "build": "tsc",
     "start": "node dist/app.js"
   },
   "dependencies": {
+    "@types/cors": "^2.8.17",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
-    "cors": "2.8.5",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "4.19.2",
     "express-session": "1.18.0",
@@ -43,5 +44,3 @@
     "typescript": "5.5.4"
   }
 }
-
-

@@ -1,7 +1,8 @@
 import express from 'express';
 import passport from './src/auth/passport';
 import session from 'express-session';
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
+import cors from 'cors';
 import userRouter from './src/routers/userroute' 
 import taskRouter from './src/routers/taskroute';
 import authRouter from './src/routers/authroute';
@@ -18,6 +19,11 @@ app.use(session({
     resave: false, 
     saveUninitialized: true,
     cookie: { secure: process.env.NODE_ENV === 'production' }
+  }));
+  app.use(cors({
+    origin: 'http://localhost:5173', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    credentials: true
   }));
 app.use(passport.initialize());
 app.use(passport.session());
