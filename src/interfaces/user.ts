@@ -36,7 +36,6 @@ export interface registerRequestBody {
 export interface loginRequestBody {
     email: string,
     password: string;
-    username: string
 }
 export interface updateUserRequestBody {
     email: string,

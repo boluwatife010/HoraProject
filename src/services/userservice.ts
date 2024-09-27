@@ -1,6 +1,8 @@
 import { userModel } from "../models/usermodel";
 import { registerRequestBody, loginRequestBody, updateUserRequestBody, changePasswordRequestBody, Iuser} from "../interfaces/user";
 import { generateAuthToken } from "../auth/auth";
+import multer from 'multer';
+import path from 'path';
 import bcrypt from 'bcryptjs';
 import {google} from 'googleapis'
 import nodemailer from 'nodemailer';
@@ -57,8 +59,8 @@ export const verifyEmailOtp = async (email: string, onetime: string) => {
     return user
 }
 export const loginUser = async (body: loginRequestBody): Promise<any> => {
-    const {email, password, username} = body;
-    const login = await userModel.findOne({email, username})
+    const {email, password} = body;
+    const login = await userModel.findOne({email})
     if (!login) {
         throw new Error ('Could not log the user in')
     }
@@ -261,5 +263,29 @@ export const verifyOTP = async (email: string, otp: string): Promise<any> => {
   
     await user.save();
   };
-  
-  
+  // Add user profile picture
+  export const userPictureUpload = () => {
+    const storage = multer.diskStorage({
+      destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+      },
+      filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+      }
+    });
+    const fileFilter = (req: Express.Request, file: Express.Multer.File, cb: any) => {
+      const fileTypes = /jpeg|jpg|png/;
+      const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+      const mimetype = fileTypes.test(file.mimetype);
+      if (mimetype && extname) {
+        return cb(null, true);
+      } else {
+        cb(new Error('Only images are allowed!'));
+      }
+    };
+    return multer({
+      storage,
+      limits: { fileSize: 1024 * 1024 * 5 }, 
+      fileFilter,
+    }).single('profilepicture'); 
+  };

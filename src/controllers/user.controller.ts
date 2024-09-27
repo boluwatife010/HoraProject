@@ -1,7 +1,6 @@
-import { body } from "express-validator";
 import { loginUser, registerUser, getAllUsers, 
     getUser, deleteUser, updateUser, forgotPassword, resetPassword, changePassword, 
-    verifyOTP, verifyEmailOtp, updateStreak,
+    verifyOTP, verifyEmailOtp, updateStreak,userPictureUpload,
     calculateProgress} from "../services/userservice";
 import express from 'express';
 
@@ -38,12 +37,12 @@ export const verifyEmailOtpHandler = async (req: express.Request, res: express.R
        }
 }
 export const userLoginHandler = async (req: express.Request, res: express.Response) => {
-    const {email, password, username} = req.body;
+    const {email, password} = req.body;
     try {
         if (!email || !password) {
             return res.status(400).send({message: 'Please fill in the required fields.'});
         }
-        const login = await loginUser({email, password, username});
+        const login = await loginUser({email, password});
         if (!login) {
             return res.status(400).send({message: 'Could not find user with this details'});
         }
@@ -198,4 +197,33 @@ export const verifyOtpHandler = async (req: express.Request, res: express.Respon
       console.error('Error verifying OTP:', err);
       return res.status(500).send({ message: 'Internal server error.' });
     }
+  };
+  export const updateStreakHandler = async (req: express.Request, res: express.Response) => {
+    const { userId } = req.params;
+    if (!userId) {
+      return res.status(400).json({ message: 'Please provide a valid userId.' });
+    }
+    try {
+      await updateStreak(userId);
+      res.status(200).json({ message: 'Daily streak updated successfully.' });
+    } catch (err) {
+      console.error('Error updating streak:', err);
+      return res.status(500).json({ message: 'Internal server error.' });
+    }
+  };
+export const userProfilePictureHandler = async (req: express.Request, res: express.Response) => {
+    const upload = userPictureUpload(); 
+    upload(req, res, (err) => {
+      if (err) {
+        return res.status(400).json({ message: err.message }); 
+      }
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+      res.status(200).json({
+        message: 'Profile picture uploaded successfully!',
+        filePath: req.file.path, 
+        fileName: req.file.filename, 
+      });
+    });
   };

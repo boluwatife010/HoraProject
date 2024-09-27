@@ -5,7 +5,7 @@ import { userRegistrationHandler,
      userLoginHandler, updateUserHandler,
      getAUserHandler,deleteAUserHandler, getAllUsersHandler, forgotPasswordHandler,
       resetPasswordHandler, changePasswordHandler, calculateProgressHandler,
-      verifyOtpHandler, verifyEmailOtpHandler} from '../controllers/user.controller';
+      verifyOtpHandler, verifyEmailOtpHandler,updateStreakHandler,userProfilePictureHandler} from '../controllers/user.controller';
 const router = express.Router()
 router.post('/register', userRegistrationHandler );
 router.post('/verify-email/:id', authenticateToken, verifyEmailOtpHandler)
@@ -19,4 +19,6 @@ router.get('/:id',authenticateToken,  getAUserHandler );
 router.get('/', getAllUsersHandler);
 router.get('/progress/:userId', calculateProgressHandler)
 router.delete('/delete/:id', authenticateToken,  deleteAUserHandler);
+router.put('/update-streak/:userid',authenticateToken, updateStreakHandler)
+router.post('/upload-picture/userId',userProfilePictureHandler)
 export default router;
