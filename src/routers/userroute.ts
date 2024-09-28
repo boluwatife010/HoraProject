@@ -2,7 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import { authenticateToken } from '../auth/auth';
 import { userRegistrationHandler,
-     userLoginHandler, updateUserHandler,
+     userLoginHandler, updateUserHandler, resendUserOtpHandle,
      getAUserHandler,deleteAUserHandler, getAllUsersHandler, forgotPasswordHandler,
       resetPasswordHandler, changePasswordHandler, calculateProgressHandler,
       verifyOtpHandler, verifyEmailOtpHandler,updateStreakHandler,userProfilePictureHandler} from '../controllers/user.controller';
@@ -21,4 +21,5 @@ router.get('/progress/:userId', calculateProgressHandler)
 router.delete('/delete/:id', authenticateToken,  deleteAUserHandler);
 router.put('/update-streak/:userid',authenticateToken, updateStreakHandler)
 router.post('/upload-picture/userId',userProfilePictureHandler)
+router.post('/resend-otp/:id', resendUserOtpHandle)
 export default router;

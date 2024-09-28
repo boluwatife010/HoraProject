@@ -1,7 +1,7 @@
 import { loginUser, registerUser, getAllUsers, 
     getUser, deleteUser, updateUser, forgotPassword, resetPassword, changePassword, 
     verifyOTP, verifyEmailOtp, updateStreak,userPictureUpload,
-    calculateProgress} from "../services/userservice";
+    calculateProgress, resendOTP} from "../services/userservice";
 import express from 'express';
 
 export const userRegistrationHandler = async (req:express.Request, res: express.Response) => {
@@ -211,6 +211,7 @@ export const verifyOtpHandler = async (req: express.Request, res: express.Respon
       return res.status(500).json({ message: 'Internal server error.' });
     }
   };
+  // User profile picture handle
 export const userProfilePictureHandler = async (req: express.Request, res: express.Response) => {
     const upload = userPictureUpload(); 
     upload(req, res, (err) => {
@@ -227,3 +228,21 @@ export const userProfilePictureHandler = async (req: express.Request, res: expre
       });
     });
   };
+  // Resend user otp handle
+  export const resendUserOtpHandle = async(req: express.Request, res: express.Response) => {
+    const {id} = req.params
+    const {email} = req.body
+    if (!id && !email) {
+        res.status(400).send({message: 'Please provide either your id or your email.'})
+    }
+    try {
+        const resending = await resendOTP(email)
+        if(!resending) {
+            res.status(400).send({message: 'Could not resend email'})
+        }
+        res.status(200).send({message: 'Successfully sent the otp, check your email! :)'})
+    }   catch (err) {
+        console.error('Error updating streak:', err);
+        return res.status(500).json({ message: 'Internal server error.' });
+      }
+  }

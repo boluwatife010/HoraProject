@@ -289,3 +289,16 @@ export const verifyOTP = async (email: string, otp: string): Promise<any> => {
       fileFilter,
     }).single('profilepicture'); 
   };
+  //Resend user otp handle using email
+  export const resendOTP = async (email: string) => {
+    const user = await userModel.findOne({email})
+    if(!user) {
+      throw new Error ('Please provide a valid email.')
+    }
+    const otp = generateOtp();
+    user.resetPasswordToken = otp;
+    user.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000)
+    await user.save();
+    await sendEmail(email, 'verify your email', `your otp is ${otp}`)
+    return {message: 'OTP sent to your email.'}
+  }
