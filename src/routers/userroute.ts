@@ -8,7 +8,7 @@ import { userRegistrationHandler,
       verifyOtpHandler, verifyEmailOtpHandler,updateStreakHandler,userProfilePictureHandler} from '../controllers/user.controller';
 const router = express.Router()
 router.post('/register', userRegistrationHandler );
-router.post('/verify-email/:id', authenticateToken, verifyEmailOtpHandler)
+router.post('/verify-email/:id',verifyEmailOtpHandler)
 router.post('/login', userLoginHandler);
 router.put('/update/:id', authenticateToken, updateUserHandler );
 router.post('/reset-password/:id', resetPasswordHandler);
