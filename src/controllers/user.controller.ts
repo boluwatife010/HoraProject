@@ -3,6 +3,15 @@ import { loginUser, registerUser, getAllUsers,
     verifyOTP, verifyEmailOtp, updateStreak,userPictureUpload,
     calculateProgress, resendOTP} from "../services/userservice";
 import express from 'express';
+import multer from 'multer';
+declare global {
+    namespace Express {
+      interface Request {
+        file?: Multer.File;
+      }
+    }
+  }
+  
 
 export const userRegistrationHandler = async (req:express.Request, res: express.Response) => {
     const {email, password, username} = req.body;
@@ -212,11 +221,13 @@ export const verifyOtpHandler = async (req: express.Request, res: express.Respon
     }
   };
   // User profile picture handle
-export const userProfilePictureHandler = async (req: express.Request, res: express.Response) => {
+  export const userProfilePictureHandler = async (req: express.Request, res: express.Response) => {
     const upload = userPictureUpload(); 
     upload(req, res, (err) => {
-      if (err) {
-        return res.status(400).json({ message: err.message }); 
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ message: `Multer error: ${err.message}` });
+      } else if (err) {
+        return res.status(500).json({ message: `Server error: ${err.message}` });
       }
       if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });

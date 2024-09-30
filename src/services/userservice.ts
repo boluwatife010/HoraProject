@@ -270,25 +270,26 @@ export const verifyOTP = async (email: string, otp: string): Promise<any> => {
         cb(null, 'uploads/');
       },
       filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
+        cb(null, `${Date.now()}-${file.originalname}`); 
       }
     });
-    const fileFilter = (req: Express.Request, file: Express.Multer.File, cb: any) => {
-      const fileTypes = /jpeg|jpg|png/;
-      const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+    const fileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+      const fileTypes = /jpeg|jpg|png/; 
+      const extname = fileTypes.test(path.extname(file.originalname).toLowerCase()); 
       const mimetype = fileTypes.test(file.mimetype);
       if (mimetype && extname) {
-        return cb(null, true);
+        cb(null, true); 
       } else {
-        cb(new Error('Only images are allowed!'));
+        cb(new Error('Only JPEG, JPG, and PNG images are allowed!')); 
       }
     };
     return multer({
       storage,
-      limits: { fileSize: 1024 * 1024 * 5 }, 
+      limits: { fileSize: 1024 * 1024 * 5 },
       fileFilter,
     }).single('profilepicture'); 
   };
+  
   //Resend user otp handle using email
   export const resendOTP = async (email: string) => {
     const user = await userModel.findOne({email})
