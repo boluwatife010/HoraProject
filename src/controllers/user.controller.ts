@@ -3,7 +3,6 @@ import { loginUser, registerUser, getAllUsers,
     verifyOTP, verifyEmailOtp, updateStreak,
     calculateProgress, resendOTP} from "../services/userservice";
 import express from 'express';
-import multer from 'multer';
 export const userRegistrationHandler = async (req:express.Request, res: express.Response) => {
     const {email, password, username} = req.body;
     try {

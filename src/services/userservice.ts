@@ -1,11 +1,7 @@
 import { userModel } from "../models/usermodel";
 import { registerRequestBody, loginRequestBody, updateUserRequestBody, changePasswordRequestBody, Iuser} from "../interfaces/user";
 import { generateAuthToken } from "../auth/auth";
-import multer, {FileFilterCallback} from 'multer';
-import path from 'path';
 import bcrypt from 'bcryptjs';
-import express from 'express'
-import {google} from 'googleapis'
 import nodemailer from 'nodemailer';
 import { generateOtp} from "../utils/generateOtp";
 import {sendEmail} from '../utils/sendmail'
