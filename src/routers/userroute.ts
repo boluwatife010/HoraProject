@@ -5,7 +5,8 @@ import { userRegistrationHandler,
      userLoginHandler, updateUserHandler, resendUserOtpHandle,
      getAUserHandler,deleteAUserHandler, getAllUsersHandler, forgotPasswordHandler,
       resetPasswordHandler, changePasswordHandler, calculateProgressHandler,
-      verifyOtpHandler, verifyEmailOtpHandler,updateStreakHandler,userProfilePictureHandler} from '../controllers/user.controller';
+      verifyOtpHandler, verifyEmailOtpHandler,updateStreakHandler} from '../controllers/user.controller';
+      import { userProfilePictureHandler } from 'src/utils/picture';
 const router = express.Router()
 router.post('/register', userRegistrationHandler );
 router.post('/verify-email/:id',verifyEmailOtpHandler)

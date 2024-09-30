@@ -1,18 +1,9 @@
 import { loginUser, registerUser, getAllUsers, 
     getUser, deleteUser, updateUser, forgotPassword, resetPassword, changePassword, 
-    verifyOTP, verifyEmailOtp, updateStreak,userPictureUpload,
+    verifyOTP, verifyEmailOtp, updateStreak,
     calculateProgress, resendOTP} from "../services/userservice";
 import express from 'express';
 import multer from 'multer';
-declare global {
-    namespace Express {
-      interface Request {
-        file?: Multer.File;
-      }
-    }
-  }
-  
-
 export const userRegistrationHandler = async (req:express.Request, res: express.Response) => {
     const {email, password, username} = req.body;
     try {
@@ -219,25 +210,6 @@ export const verifyOtpHandler = async (req: express.Request, res: express.Respon
       console.error('Error updating streak:', err);
       return res.status(500).json({ message: 'Internal server error.' });
     }
-  };
-  // User profile picture handle
-  export const userProfilePictureHandler = async (req: express.Request, res: express.Response) => {
-    const upload = userPictureUpload(); 
-    upload(req, res, (err) => {
-      if (err instanceof multer.MulterError) {
-        return res.status(400).json({ message: `Multer error: ${err.message}` });
-      } else if (err) {
-        return res.status(500).json({ message: `Server error: ${err.message}` });
-      }
-      if (!req.file) {
-        return res.status(400).json({ message: 'No file uploaded' });
-      }
-      res.status(200).json({
-        message: 'Profile picture uploaded successfully!',
-        filePath: req.file.path, 
-        fileName: req.file.filename, 
-      });
-    });
   };
   // Resend user otp handle
   export const resendUserOtpHandle = async(req: express.Request, res: express.Response) => {
