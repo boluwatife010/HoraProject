@@ -6,7 +6,7 @@ import nodemailer from 'nodemailer';
 import { generateOtp} from "../utils/generateOtp";
 import {sendEmail} from '../utils/sendmail'
 import { taskModel } from "../models/taskmodel";
-import multer from 'multer';
+import multer, {StorageEngine} from 'multer';
 import path from 'path'
 import { OAuth2Client } from 'google-auth-library';
 const oauth2Client = new OAuth2Client(
@@ -17,15 +17,16 @@ const oauth2Client = new OAuth2Client(
 oauth2Client.setCredentials({
   refresh_token: process.env.REFRESH_TOKEN,
 });
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'src/uploads/'); 
+const storage: StorageEngine = multer.diskStorage({
+  destination: (req: Express.Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
+    cb(null, 'src/uploads/');
   },
-  filename: (req, file, cb) => {
+  filename: (req: Express.Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); 
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
+
 export const upload = multer({ storage });
 export const userProfilePicture = (file: Express.Multer.File | undefined) => {
   if (!file) {
