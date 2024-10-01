@@ -6,7 +6,8 @@ import nodemailer from 'nodemailer';
 import { generateOtp} from "../utils/generateOtp";
 import {sendEmail} from '../utils/sendmail'
 import { taskModel } from "../models/taskmodel";
-
+import multer from 'multer';
+import path from 'path'
 import { OAuth2Client } from 'google-auth-library';
 const oauth2Client = new OAuth2Client(
   process.env.CLIENT_ID,
@@ -16,7 +17,25 @@ const oauth2Client = new OAuth2Client(
 oauth2Client.setCredentials({
   refresh_token: process.env.REFRESH_TOKEN,
 });
-
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'src/uploads/'); 
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname)); 
+  }
+});
+export const upload = multer({ storage });
+export const userProfilePicture = (file: Express.Multer.File | undefined) => {
+  if (!file) {
+    throw new Error('File upload failed');
+  }
+  return {
+    message: 'File uploaded successfully',
+    filePath: `/uploads/${file.filename}`,
+  };
+};
 export const registerUser = async (body: registerRequestBody):Promise <any> => {
     const {email, password, username} = body;
     const existingUser = await userModel.findOne({email});
