@@ -1,4 +1,10 @@
+declare namespace Express {
+  export interface Request {
+    file: Multer["File"];
+  }
+}
 
+/*
 import { Multer } from 'multer';
 
 declare global {
@@ -9,3 +15,4 @@ declare global {
     }
   }
 }
+*/
