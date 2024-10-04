@@ -9,7 +9,6 @@ import { taskModel } from "../models/taskmodel";
 import multer, {StorageEngine} from 'multer';
 import express from 'express';
 import path from 'path';
-import { Multer } from 'multer';
 
 declare global {
   namespace Express {
