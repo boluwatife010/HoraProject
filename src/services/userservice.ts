@@ -28,17 +28,17 @@ oauth2Client.setCredentials({
   refresh_token: process.env.REFRESH_TOKEN,
 });
 const storage: StorageEngine = multer.diskStorage({
-  destination: (req: express.Request, file, cb: (error: Error | null, destination: string) => void) => {
+  destination: (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
     cb(null, 'src/uploads/');
   },
-  filename: (req: express.Request, file, cb: (error: Error | null, filename: string) => void) => {
+  filename: (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
 
 export const upload = multer({ storage });
-export const userProfilePicture = (file ?: any) => {
+export const userProfilePicture = (file: Express.Multer.File | undefined) => {
   if (!file) {
     throw new Error('File upload failed');
   }
