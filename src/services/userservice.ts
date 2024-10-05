@@ -47,6 +47,14 @@ export const userProfilePicture = (file: Express.Multer.File | undefined) => {
     filePath: `/uploads/${file.filename}`,
   };
 };
+declare global {
+  namespace Express {
+    interface Request {
+      file?: Express.Multer.File;
+    }
+  }
+}
+
 export const registerUser = async (body: registerRequestBody):Promise <any> => {
     const {email, password, username} = body;
     const existingUser = await userModel.findOne({email});
