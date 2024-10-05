@@ -6,17 +6,17 @@ import nodemailer from 'nodemailer';
 import { generateOtp} from "../utils/generateOtp";
 import {sendEmail} from '../utils/sendmail'
 import { taskModel } from "../models/taskmodel";
-import multer, {StorageEngine} from 'multer';
-import express from 'express';
-import path from 'path';
+// import multer, {StorageEngine} from 'multer';
+// import express from 'express';
+// import path from 'path';
 
-declare global {
-  namespace Express {
-    interface Request {
-      file?: Multer.File;
-    }
-  }
-}
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       file?: Multer.File;
+//     }
+//   }
+// }
 
 import { OAuth2Client } from 'google-auth-library';
 const oauth2Client = new OAuth2Client(
@@ -27,33 +27,33 @@ const oauth2Client = new OAuth2Client(
 oauth2Client.setCredentials({
   refresh_token: process.env.REFRESH_TOKEN,
 });
-const storage: StorageEngine = multer.diskStorage({
-  destination: (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
-    cb(null, 'src/uploads/');
-  },
-  filename: (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// const storage: StorageEngine = multer.diskStorage({
+//   destination: (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
+//     cb(null, 'src/uploads/');
+//   },
+//   filename: (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
+//     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+//   }
+// });
 
-export const upload = multer({ storage });
-export const userProfilePicture = (file: Express.Multer.File | undefined) => {
-  if (!file) {
-    throw new Error('File upload failed');
-  }
-  return {
-    message: 'File uploaded successfully',
-    filePath: `/uploads/${file.filename}`,
-  };
-};
-declare global {
-  namespace Express {
-    interface Request {
-      file?: Express.Multer.File;
-    }
-  }
-}
+// export const upload = multer({ storage });
+// export const userProfilePicture = (file: Express.Multer.File | undefined) => {
+//   if (!file) {
+//     throw new Error('File upload failed');
+//   }
+//   return {
+//     message: 'File uploaded successfully',
+//     filePath: `/uploads/${file.filename}`,
+//   };
+// };
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       file?: Express.Multer.File;
+//     }
+//   }
+// }
 
 export const registerUser = async (body: registerRequestBody):Promise <any> => {
     const {email, password, username} = body;
