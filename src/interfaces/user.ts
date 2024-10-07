@@ -4,6 +4,7 @@ export interface Iuser extends Document {
     _id: mongoose.Types.ObjectId;
     username: string;
     points: number;
+    token?: string;
     email: string;
     password: string;
     streakCount: number;

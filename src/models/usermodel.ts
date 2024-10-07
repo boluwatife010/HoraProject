@@ -31,6 +31,7 @@ const userSchema: Schema<Iuser> = new Schema({
       },
     googleId: {type: String},
     name: {type: String},
+    token: {type: String},
     profilepicture: {type:String},
     createdAt: {type: Date, default: Date.now},
     updatedAt: {type: Date, default: Date.now},

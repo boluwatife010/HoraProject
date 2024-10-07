@@ -1,6 +1,6 @@
 import { userModel } from "../models/usermodel";
 import { registerRequestBody, loginRequestBody, updateUserRequestBody, changePasswordRequestBody, Iuser} from "../interfaces/user";
-import { generateAuthToken } from "../auth/auth";
+import { generateAuthToken, verifyAuthToken} from "../auth/auth";
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import { generateOtp} from "../utils/generateOtp";
@@ -69,6 +69,7 @@ export const registerUser = async (body: registerRequestBody):Promise <any> => {
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
     const createUser = new userModel({ email, password, onetime, otpExpires, username});
     const token = generateAuthToken(createUser._id.toString());
+    createUser.token = token;
     if (!createUser) {
         throw new Error ('Please validate your details above')
     }
@@ -103,12 +104,25 @@ export const loginUser = async (body: loginRequestBody): Promise<any> => {
     if (!comparing) {
         throw new Error ('Invalid password used.')
     }
+    let token = login.token
     try {
+      if (token ) {
+        verifyAuthToken(token)
+      }
+      else {
+        // No token exists, generate a new token
+        token = generateAuthToken(login._id.toString());
+        login.token = token;
+        await login.save();
+      }
       await updateStreak(login._id.toString());
   } catch (err) {
+        token = generateAuthToken(login._id.toString());
+        login.token = token;
+        await login.save();
       console.error('Error updating streak:', err);
   }
-    return {login};
+    return {login, token};
 }
 export const updateUser = async (body: updateUserRequestBody, id: string): Promise<any> => {
     const {email, password, username} =  body;
