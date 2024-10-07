@@ -122,7 +122,7 @@ export const loginUser = async (body: loginRequestBody): Promise<any> => {
         await login.save();
       console.error('Error updating streak:', err);
   }
-    return {login, token};
+    return {login};
 }
 export const updateUser = async (body: updateUserRequestBody, id: string): Promise<any> => {
     const {email, password, username} =  body;
