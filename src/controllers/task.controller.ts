@@ -5,12 +5,12 @@ import mongoose from 'mongoose';
 
 
 export const createTaskHandler = async (req: express.Request, res: express.Response) => {
-    const { title, description, dueDate, repeatTask, createdBy } = req.body;
+    const { title, description, dueDate, repeatTask, createdBy, time } = req.body;
     try {
-        if (!title && !description && !dueDate && !repeatTask) {
+        if (!title && !description && !dueDate && !repeatTask && !time) {
             return res.status(400).send({ message: 'Please provide all required fields.' });
         }
-        const createdTask = await createTask({ title, description, dueDate, repeatTask, createdBy});
+        const createdTask = await createTask({ title, description, dueDate, repeatTask, createdBy, time});
 
         if (!createdTask) {
             return res.status(400).send({ message: 'Could not create a new task.' });

@@ -4,8 +4,8 @@ import { createTaskRequestBody, searchTaskRequestBody, updateTaskRequestBody } f
 import { userModel } from "../models/usermodel";
 import mongoose from "mongoose";
 export const createTask = async (body: createTaskRequestBody): Promise<any> => {
-    const {title, description, dueDate, repeatTask, createdBy} = body;
-    if (!title && !description && !dueDate && !repeatTask && !createdBy) {
+    const {title, description, dueDate, repeatTask, createdBy,time} = body;
+    if (!title && !description && !dueDate && !repeatTask && !createdBy && !time) {
         throw new Error ('Please provide the following details.')
     }
     let parsedDueDate: Date | undefined;
@@ -15,7 +15,7 @@ export const createTask = async (body: createTaskRequestBody): Promise<any> => {
             throw new Error('Invalid date format.');
         }
     }
-    const newTask = new taskModel({title, description, dueDate: parsedDueDate, repeatTask, createdBy})
+    const newTask = new taskModel({title, description, dueDate: parsedDueDate, repeatTask, createdBy, time})
     if (!newTask) {
         throw new Error('Could not create a new task, please cross-check your details')
     }
