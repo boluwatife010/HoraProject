@@ -78,22 +78,26 @@ export const registerUser = async (body: registerRequestBody):Promise <any> => {
     return {createUser, token}
 }
 export const verifyEmailOtp = async (email: string, onetime: string) => {
-    const user = await userModel.findOne({email});
-    if (!user) {
-        throw new Error ('Could not find user email')
-    }
-    if (user.isVerified) {
-        throw new Error ('User is already verified');
-    }
-    if (user.onetime !== onetime || user.otpExpires! < new Date()) {
-        throw new Error('Invalid or otp has expired')
-      }
-    user.isVerified = true;
-    user.onetime = null;
-    user.otpExpires = null;
-    await user.save();
-    return user
-}
+  const user = await userModel.findOne({ email });
+  if (!user) {
+    throw new Error('Could not find user with the provided email.');
+  }
+  if (user.isVerified) {
+    throw new Error('User is already verified.');
+  }
+  const currentDate = new Date();
+  if (!user.onetime || user.onetime !== onetime) {
+    throw new Error('Invalid OTP.');
+  }
+  if (!user.otpExpires || user.otpExpires < currentDate) {
+    throw new Error('OTP has expired.');
+  }
+  user.isVerified = true;
+  user.onetime = null; 
+  user.otpExpires = null; 
+  await user.save();
+  return user;
+};
 export const loginUser = async (body: loginRequestBody): Promise<any> => {
     const {email, password} = body;
     const login = await userModel.findOne({email})
@@ -312,16 +316,19 @@ export const verifyOTP = async (email: string, otp: string): Promise<any> => {
   
     await user.save();
   };
-  //Resend user otp handle using email
-  export const resendOTP = async (email: string) => {
-    const user = await userModel.findOne({email})
-    if(!user) {
-      throw new Error ('Please provide a valid email.')
-    }
-    const otp = generateOtp();
-    user.resetPasswordToken = otp;
-    user.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000)
-    await user.save();
-    await sendEmail(email, 'verify your email', `your otp is ${otp}`)
-    return {message: 'OTP sent to your email.'}
+ // Resend OTP
+ export const resendOTP = async (email: string) => {
+  const user = await userModel.findOne({ email });
+  if (!user) {
+    throw new Error('User not found.');
   }
+  if (user.isVerified) {
+    throw new Error('User is already verified.');
+  }
+  const otp = generateOtp(); 
+  user.onetime = otp;
+  user.otpExpires = new Date(Date.now() + 10 * 60 * 1000); 
+  await user.save();
+  await sendEmail(email, 'Your new OTP', `Your OTP is ${otp}`);
+  return { message: 'A new OTP has been sent to your email.' };
+};

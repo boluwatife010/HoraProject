@@ -16,7 +16,7 @@ const taskSchema = new Schema({
     completedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     repeatTask: {
         type: String,
-        enum: ['daily', 'weekly', 'monthly', 'none'],
+        enum: ['daily', 'weekly', 'none'],
         default: 'none'
     },
     completed: {
