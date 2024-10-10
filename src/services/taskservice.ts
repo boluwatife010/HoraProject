@@ -4,24 +4,41 @@ import { createTaskRequestBody, searchTaskRequestBody, updateTaskRequestBody } f
 import { userModel } from "../models/usermodel";
 import mongoose from "mongoose";
 export const createTask = async (body: createTaskRequestBody): Promise<any> => {
-    const {title, description, dueDate, repeatTask, createdBy,time} = body;
-    if (!title && !description && !dueDate && !repeatTask && !createdBy && !time) {
-        throw new Error ('Please provide the following details.')
+    const { title, description, dueDate, repeatTask, createdBy, time } = body;
+    if (!title || !description || !dueDate || !createdBy) {
+      throw new Error('Please provide title, description, dueDate, and createdBy.');
     }
     let parsedDueDate: Date | undefined;
     if (dueDate) {
-        parsedDueDate = new Date(dueDate);
-        if (isNaN(parsedDueDate.getTime())) {
-            throw new Error('Invalid date format.');
+      parsedDueDate = new Date(dueDate);
+      if (isNaN(parsedDueDate.getTime())) {
+        throw new Error('Invalid date format.');
+      }
+      if (time) {
+        const [hours, minutes] = time.split(':').map(Number); 
+        if (isNaN(hours) || isNaN(minutes)) {
+          throw new Error('Invalid time format. Please provide time in "HH:MM" format.');
         }
+        parsedDueDate.setHours(hours);
+        parsedDueDate.setMinutes(minutes);
+      }
     }
-    const newTask = new taskModel({title, description, dueDate: parsedDueDate, repeatTask, createdBy, time})
+    const newTask = new taskModel({
+      title,
+      description,
+      dueDate: parsedDueDate,
+      repeatTask,
+      createdBy,
+      time,
+    });
     if (!newTask) {
-        throw new Error('Could not create a new task, please cross-check your details')
+      throw new Error('Could not create a new task, please cross-check your details.');
     }
-    await newTask.save()
-    return newTask ;
-}
+    await newTask.save();
+    return newTask;
+  };
+    
+
 export const getATask = async (id: string): Promise<any> => {
     // if (!mongoose.Types.ObjectId.isValid(id)) {
     //     throw new Error('Invalid task ID');

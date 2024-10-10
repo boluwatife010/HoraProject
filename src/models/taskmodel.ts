@@ -13,7 +13,7 @@ const taskSchema = new Schema({
         type: Date,
         required: false
     },
-    time : {type: Date},
+    time : {type: String},
     completedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     repeatTask: {
         type: String,

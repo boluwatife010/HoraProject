@@ -4,7 +4,7 @@ export interface Task {
     title: string;
     description: string;
     dueDate: Date;
-    time: Date;
+    time: string;
     completed: boolean;
     completedBy: mongoose.Types.ObjectId[];
     createdBy: string;
@@ -16,7 +16,7 @@ export interface Task {
 export interface createTaskRequestBody {
     title: string;
     description: string;
-    time: Date;
+    time: string;
     dueDate?: Date;
     createdBy: mongoose.Schema.Types.ObjectId;
     repeatTask?:  'daily' | 'weekly' | 'monthly' | 'none'
