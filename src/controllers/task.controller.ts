@@ -33,7 +33,7 @@ export const getTaskHandler = async (req: express.Request, res: express.Response
         if (!getTask) {
             return res.status(400).send({message: 'Could not find task with this id'})
         }
-        return res.status(200).send({message: 'Successfully go task', getTask})
+        return res.status(200).send({message: 'Successfully got task', getTask})
     }   catch (err) {
         console.log(err, 'Invalid err');
         return res.status(500).send({message: 'Internal server error.'}); 
