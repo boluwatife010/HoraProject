@@ -194,7 +194,8 @@ export const forgotPassword = async (email: string): Promise<any> => {
   await user.save();
   console.log(`Generated OTP for ${email}: ${otp}`);
   try {
-    const { token: accessToken } = await oauth2Client.getAccessToken();
+    const accessTokenObj = await oauth2Client.getAccessToken();
+    const accessToken = accessTokenObj?.token;
     
     if (!accessToken) {
       throw new Error('Failed to generate access token.');
@@ -203,21 +204,20 @@ export const forgotPassword = async (email: string): Promise<any> => {
       service: 'gmail',
       auth: {
         type: 'OAuth2',
-        user: process.env.EMAIL_USER,
+        user: process.env.EMAIL_USER, 
         clientId: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
         refreshToken: process.env.REFRESH_TOKEN,
-        accessToken,
+        accessToken: accessToken, 
       },
     });
     const mailOptions = {
       to: user.email,
-      from: 'yourapp@example.com',
+      from: process.env.EMAIL_USER, 
       subject: 'Password Reset OTP',
       text: `Your OTP for password reset is: ${otp}`,
     };
     await transporter.sendMail(mailOptions);
-
     return { message: 'OTP sent to email' };
   } catch (err) {
     console.error('Error sending OTP email:', err);
