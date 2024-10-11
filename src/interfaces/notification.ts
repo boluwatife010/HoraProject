@@ -3,8 +3,6 @@ export interface Notification extends Document{
     _id: Types.ObjectId
     userId: string;
     message: string;
-    type: string;
+    isRead: boolean;
     status: string;
-    createdAt?: Date;
-    updatedAt: Date;
 }

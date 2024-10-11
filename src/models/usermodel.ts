@@ -30,6 +30,7 @@ const userSchema: Schema<Iuser> = new Schema({
         max: [20, 'Your useername should  be less than 20 characters.']
       },
     googleId: {type: String},
+    socketId: {type: String},
     name: {type: String},
     token: {type: String},
     profilepicture: {type:String},
@@ -56,4 +57,5 @@ userSchema.methods.comparePassword = function (password: string): Promise<boolea
     this.updatedAt = new Date();
     next();
   });
-export const userModel = mongoose.model<Iuser>('User', userSchema);
+ const userModel = mongoose.model<Iuser>('User', userSchema);
+ export default userModel

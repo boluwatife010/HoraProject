@@ -5,6 +5,7 @@ export interface Iuser extends Document {
     username: string;
     points: number;
     token?: string;
+    socketId: string;
     email: string;
     password: string;
     streakCount: number;

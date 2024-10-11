@@ -1,5 +1,5 @@
-import { createNotificationHandler } from "../controllers/notificationcontrollers";
+import { handleCreateNotification } from "../controllers/notificationcontrollers";
 import express from 'express';
 const router = express.Router()
-router.get('/notifications', createNotificationHandler)
+router.get('/notifications', handleCreateNotification)
 export default router;

@@ -4,7 +4,8 @@ const Schema = mongoose.Schema
 const notificationSchema = new Schema ({
     userId: {
         required: true,
-        type: String
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     },
     message: {
         required: true,
@@ -15,9 +16,9 @@ const notificationSchema = new Schema ({
         type: String,
         default: 'pending'
     },
-    type: {
+    isRead: {
         required: true,
-        type: String
+        type: Boolean
     }
 },
 {timestamps: true})
