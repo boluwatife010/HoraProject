@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from './src/auth/passport';
 import session from 'express-session';
-import { Server as SocketIOServer } from 'socket.io';
+import { Server as SocketIOServer , Socket} from 'socket.io';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { createServer } from 'http';
@@ -47,9 +47,9 @@ app.use('/group', groupRouter)
 app.use ('/api', notificationRouter)
 app.use ('/api/auth', authRouter)
 
-io.on('connection', (socket) => {
+io.on('connection', (socket: Socket) => {
   console.log('A user connected:', socket.id);
-  socket.on('joinRoom', (roomId) => {
+  socket.on('joinRoom', (roomId: string) => {
     socket.join(roomId);
     console.log(`User with ID: ${socket.id} joined room: ${roomId}`);
   });
