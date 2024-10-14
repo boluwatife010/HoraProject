@@ -10,13 +10,13 @@ import multer, {StorageEngine} from 'multer';
 import express from 'express';
 import path from 'path';
 
-declare global {
-  namespace Express {
-    interface Request {
-      file?: Multer.File;
-    }
-  }
-}
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       file?: Multer.File;
+//     }
+//   }
+// }
 
 import { OAuth2Client } from 'google-auth-library';
 const oauth2Client = new OAuth2Client(

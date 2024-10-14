@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es2017",
     "allowJs": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -25,6 +26,6 @@
     "./test",
     "src/test/*"
   ],
-  "include": ["index.d.ts", "src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/types/**/*.d.ts"]
 }
 

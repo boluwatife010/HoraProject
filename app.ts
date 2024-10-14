@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from './src/auth/passport';
 import session from 'express-session';
-import { Server as SocketIOServer , Socket} from 'socket.io';
+import { Server as SocketIOServer} from 'socket.io';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { createServer } from 'http';
@@ -12,6 +12,7 @@ import authRouter from './src/routers/authroute';
 import groupRouter from './src/routers/grouproute'
 import connectDb from './db';
 import notificationRouter from './src/routers/notificationrouter'
+import { Socket } from 'socket.io';
 dotenv.config()
 
 const app = express();
