@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "es2017",
     "allowJs": true,
-    //"typeRoots": ["./node_modules/@types", "./src/types"],
     "skipLibCheck": true,
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -17,7 +13,7 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "noFallthroughCasesInSwitch": true,
-    "outDir": "dist",
+    "outDir": "./dist",
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
@@ -29,6 +25,5 @@
     "./test",
     "src/test/*"
   ],
-  "include": ["./src/**/*.ts", "src/types/**/*.d.ts"]
+  "include": ["src/**/*"]
 }
-
