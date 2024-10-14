@@ -6,9 +6,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "typeRoots": [
-      "./node_modules/@types"
-    ],
+    "typeRoots": ["node_modules/@types" ],
     "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
     "moduleResolution": "node",
@@ -28,5 +26,5 @@
     "./test",
     "src/test/*"
   ],
-  "include": ["src/**/*", "src/**/*.ts"]
+  "include": ["*.ts","src/**/*"]
 }
