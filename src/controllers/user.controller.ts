@@ -3,19 +3,19 @@ import { loginUser, registerUser, getAllUsers,
     verifyOTP, verifyEmailOtp, updateStreak,
     calculateProgress, resendOTP} from "../services/userservice";
 import express from 'express';
-
-// export const userProfilePictureHandler = async (req: express.Request, res: express.Response) => {
-//     try {
-//         const result =  userProfilePicture(req.file)
-//         if(!result) {
-//           return res.status(400).send({message: 'picture upload failed'})
-//         }
-//         return res.status(200).send({message: 'Successfully uploaded picture', result})
-//     }   catch (err) {
-//         console.log(err, 'Invalid err');
-//         return res.status(500).send({message: 'Internal server error.'});
-//        }
-// }
+import { userProfilePicture } from "../services/userservice";
+export const userProfilePictureHandler = async (req: express.Request, res: express.Response) => {
+    try {
+        const result =  userProfilePicture(req.file)
+        if(!result) {
+          return res.status(400).send({message: 'picture upload failed'})
+        }
+        return res.status(200).send({message: 'Successfully uploaded picture', result})
+    }   catch (err) {
+        console.log(err, 'Invalid err');
+        return res.status(500).send({message: 'Internal server error.'});
+       }
+}
 
 
 export const userRegistrationHandler = async (req:express.Request, res: express.Response) => {
