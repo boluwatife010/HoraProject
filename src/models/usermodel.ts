@@ -57,5 +57,5 @@ userSchema.methods.comparePassword = function (password: string): Promise<boolea
     this.updatedAt = new Date();
     next();
   });
- const userModel = mongoose.model<Iuser>('User', userSchema);
- export default userModel
+ export const userModel = mongoose.model<Iuser>('User', userSchema);
+ 

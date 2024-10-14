@@ -2,7 +2,7 @@ import { groupModel, invitationModel } from "../models/groupmodel";
 import nodemailer from 'nodemailer';
 import mongoose, { Types } from "mongoose";
 import { taskModel } from "../models/taskmodel";
-import { userModel } from "../models/usermodel";
+import userModel from "../models/usermodel";
 import { createGroupTaskBody, invitationRequestBody, updateGroupRequest } from "../interfaces/group";
 import {v4 as uuidv4} from 'uuid';
 

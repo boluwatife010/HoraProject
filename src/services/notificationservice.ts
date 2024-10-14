@@ -1,5 +1,5 @@
 import notificationModel from "../models/notificationmodel";
-import userModel from "../models/usermodel";
+import {userModel} from "../models/usermodel";
 import { io } from '../../app';
 export const notificationService = async (message: string, userId: string): Promise<any> => {
   try {
