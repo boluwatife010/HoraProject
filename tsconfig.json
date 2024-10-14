@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2017",
     "allowJs": true,
-    "typeRoots": ["./node_modules/@types", "./src/types"],
+    //"typeRoots": ["./node_modules/@types", "./src/types"],
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
