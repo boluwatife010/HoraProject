@@ -5,8 +5,17 @@ import { loginUser, registerUser, getAllUsers,
 import express from 'express';
 import { userProfilePicture } from "../services/userservice";
 export const userProfilePictureHandler = async (req: express.Request, res: express.Response) => {
+    const {id} = req.params
+    if (!id) {
+        return res.status(400).send({message: 'Please provide a valid id.'})
+    }
     try {
-        const result =  userProfilePicture(req.file)
+        console.log('Uploaded file:', req.file);
+        const result = userProfilePicture(req.file, id);
+        if (!result) {
+          return res.status(400).send({ message: 'Picture upload failed' });
+        }
+    
         if(!result) {
           return res.status(400).send({message: 'picture upload failed'})
         }

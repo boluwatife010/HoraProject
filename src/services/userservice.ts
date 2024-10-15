@@ -30,7 +30,7 @@ const storage: StorageEngine = multer.diskStorage({
 });
 
 export const upload = multer({ storage });
-export const userProfilePicture = (file: Express.Multer.File | undefined) => {
+export const userProfilePicture = (file: Express.Multer.File | undefined, id: string) => {
   if (!file) {
     throw new Error('File upload failed');
   }
