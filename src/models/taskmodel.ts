@@ -24,6 +24,7 @@ const taskSchema = new Schema({
         type: Boolean,
         default: false
     },
+    type: 'Personal task',
     groupId: { type: Schema.Types.ObjectId, 
         ref: 'Group' },
     createdBy: { type: Schema.Types.ObjectId, 

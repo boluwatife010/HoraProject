@@ -40,8 +40,9 @@ export const getTaskHandler = async (req: express.Request, res: express.Response
     }
 }
 export const getTasksHandler = async (req: express.Request, res: express.Response) => {
+    const {id} = req.params
     try {
-        const task = await getAllTasks()
+        const task = await getAllTasks(id)
         if(!task) {
             return res.status(400).send({message: 'Could not get all tasks'})
         }

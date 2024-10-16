@@ -49,7 +49,7 @@ export const getATask = async (id: string): Promise<any> => {
     }
     return task;
 }
-export const getAllTasks = async (): Promise<any> => {
+export const getAllTasks = async (id:string): Promise<any> => {
     const tasks = await taskModel.find();
     if (!tasks) {
         throw new Error ('Could not get all tasks');

@@ -5,7 +5,7 @@ const router = express.Router();
 router.post('/create', createTaskHandler);
 router.put('/update/:id', updateTaskHandler);
 router.get('/:id', getTaskHandler);
-router.get('/', getTasksHandler);
+router.get('/:id', getTasksHandler);
 router.get('/search/:id', searchTaskHandler);
 router.delete('/delete/:id', deleteTaskHandler);
 router.get('/today/:id', GetTaskForDayHandler )
