@@ -94,6 +94,7 @@ export const createGroupTask = async (body: createGroupTaskBody): Promise<any> =
     }
     const newTask = new taskModel({
         title,
+        type: ['Group'],
         description,
         dueDate,
         groupId: groupObjectId,

@@ -26,6 +26,7 @@ export const createTask = async (body: createTaskRequestBody): Promise<any> => {
     const newTask = new taskModel({
       title,
       description,
+      type: ['Personal'],
       dueDate: parsedDueDate,
       repeatTask,
       createdBy,
