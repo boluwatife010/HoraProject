@@ -5,7 +5,7 @@ export interface Task {
     description: string;
     dueDate: Date;
     time: string;
-    type: 'Personl task'
+    type: ['Personal', 'Group'];
     completed: boolean;
     completedBy: mongoose.Types.ObjectId[];
     createdBy: string;
