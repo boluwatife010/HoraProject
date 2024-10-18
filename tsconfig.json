@@ -26,5 +26,5 @@
     "./test",
     "src/test/*"
   ],
-  "include": ["*.ts","src/**/*"]
+  "include": ["*.ts","src/**/*",  "src/**/*.d.ts"]
 }
