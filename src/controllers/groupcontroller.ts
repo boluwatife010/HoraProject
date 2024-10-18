@@ -1,7 +1,7 @@
 
 import { createGroup, createLink, joinGroup, createGroupTask , updateGroupTask, completeTask, 
     leaveGroup, getAllGroupTasks, deleteGroupTask, getGroupTask,
-    deleteUserFromGroup,
+    deleteUserFromGroup, getAllGroups, getGroup,
     getLeaderboard} from "../services/groupservice";
 import express from 'express';
 export const createGroupHandler = async (req: express.Request, res: express.Response) => {
@@ -28,7 +28,7 @@ export const createLinkHandler = async (req: express.Request, res: express.Respo
         }
         const link = await createLink({groupId, inviterId, email})
         if (!link) {
-            return res.status(400).send({message: 'Could not create link to send to members'})
+            return res.status(400).send({message: 'Could not send link to send to members'})
         }
         return res.status(200).send({message: 'Invitation sent successfully', link})
     }   catch (err) {
@@ -47,6 +47,38 @@ export const joinGroupHandler = async (req: express.Request, res: express.Respon
             return res.status(400).send({message: 'Could not join group successfully'})
         }
         return res.status(200).send({message: 'Successfully joined  group', join})
+    }   catch (err) {
+        console.log(err, 'Invalid err');
+        return res.status(500).send({message: 'Internal server error.'}); 
+    }
+}
+export const getGroupHandler = async (req: express.Request, res: express.Response) => {
+    const {id} = req.params
+    try {
+        if (!id) {
+            return res.status(400).send({message: 'Please provide a valid id.'})
+        }
+        const group = await getGroup(id)
+        if (!group) {
+            return res.status(400).send({message: 'Could not get the group information'})
+        }
+        return res.status(200).send({message: 'Successfully got the group :)', group})
+    }   catch (err) {
+        console.log(err, 'Invalid err');
+        return res.status(500).send({message: 'Internal server error.'}); 
+    }
+}
+export const getAllGroupsHandler = async (req: express.Request, res: express.Response) => {
+    const {id} = req.params
+    try {
+        if (!id) {
+            return res.status(400).send({message: 'Please provide a valid id.'})
+        }
+        const groups = await getAllGroups(id)
+        if (!groups) {
+            return res.status(400).send({message: 'Could not get all groups'})
+        }
+        return res.status(200).send({message: 'Successfully got all groups!', groups} )
     }   catch (err) {
         console.log(err, 'Invalid err');
         return res.status(500).send({message: 'Internal server error.'}); 

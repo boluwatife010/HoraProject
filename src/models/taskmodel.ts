@@ -14,7 +14,7 @@ const taskSchema = new Schema({
         required: false
     },
     time : {type: String},
-    completedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    completedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     repeatTask: {
         type: String,
         enum: ['daily', 'weekly', 'none'],

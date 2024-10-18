@@ -4,7 +4,6 @@ import mongoose, { Types } from "mongoose";
 import { taskModel } from "../models/taskmodel";
 import { userModel } from "../models/usermodel";
 import { createGroupTaskBody, invitationRequestBody, updateGroupRequest } from "../interfaces/group";
-import {v4 as uuidv4} from 'uuid';
 
 function generateInviteCode(length: number = 6): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxys0123456789';
@@ -30,6 +29,26 @@ export const createGroup = async (groupName:string, userId: string):Promise<any>
      }
     await newGroup.save();
      return newGroup
+}
+export const getGroup = async (id:string) => {
+    if (!id) {
+        throw new Error('Please provide a valid group id')
+    }
+    const groups = await groupModel.findById(id);
+    if (!groups) {
+        throw new Error('Could not get the specific group with the specific id')
+    }
+    return groups;
+}
+export const getAllGroups = async (id: string) => {
+    if (!id) {
+        throw new Error('Please provide a valid group id')
+    }
+    const allGroups = await groupModel.find();
+    if (!allGroups) {
+        throw new Error('Could not get all groups created')
+    }
+    return allGroups;
 }
 export const createLink = async (body: invitationRequestBody)=> {
     const {groupId, inviterId, email} = body;
@@ -100,13 +119,18 @@ export const createGroupTask = async (body: createGroupTaskBody): Promise<any> =
     if (!group) {
         throw new Error('Could not find the group');
     }
+    const createdByUserId = group.members[0];
+    const createdByUser = await userModel.findById(createdByUserId)
+    if (!createdByUser) {
+        throw new Error('Could not find the person that created this task')
+    }
     const newTask = new taskModel({
         title,
         type: ['Group'],
         description,
         dueDate,
         groupId: groupObjectId,
-        createdBy: group.members[0],
+        createdBy: createdByUser,
     });
     await newTask.save();
     group.tasks.push(newTask._id);
@@ -123,10 +147,9 @@ export const updateGroupTask = async (groupId: string, updates: updateGroupReque
     // await task.save();
     return task;
   };
-
 export const completeTask = async (taskId: string, userId: string) => {
     const task = await taskModel.findById(taskId);
-    const userObjectId = new mongoose.Types.ObjectId(userId)
+    const userObjectId = new mongoose.Types.ObjectId(userId);
     if (!task) throw new Error('Task not found');
     if (!task.completedBy.includes(userObjectId)) {
         task.completedBy.push(userObjectId);
@@ -140,9 +163,10 @@ export const completeTask = async (taskId: string, userId: string) => {
             await user.save();
         }
     }
-
-    return task;
+    const taskWithFullUsers = await taskModel.findById(taskId).populate('completedBy');
+    return taskWithFullUsers;
 };
+
 
 export const getGroupTask = async (groupId: string, taskId: string) => {
     const group = await groupModel.findById(groupId).populate('tasks');
