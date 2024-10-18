@@ -1,30 +1,20 @@
 import { loginUser, registerUser, getAllUsers, 
     getUser, deleteUser, updateUser, forgotPassword, resetPassword, changePassword, 
-    verifyOTP, verifyEmailOtp, updateStreak,
+    verifyOTP, verifyEmailOtp, updateStreak, saveProfilePicture,
     calculateProgress, resendOTP} from "../services/userservice";
 import express from 'express';
-import { userProfilePicture } from "../services/userservice";
-export const userProfilePictureHandler = async (req: express.Request, res: express.Response) => {
-    const {id} = req.params
-    if (!id) {
-        return res.status(400).send({message: 'Please provide a valid id.'})
-    }
+export const uploadProfilePictureHandler = async (req: express.Request, res: express.Response) => {
     try {
-        console.log('Uploaded file:', req.file);
-        const result = userProfilePicture(req.file, id);
-        if (!result) {
-          return res.status(400).send({ message: 'Picture upload failed' });
-        }
-    
-        if(!result) {
-          return res.status(400).send({message: 'picture upload failed'})
-        }
-        return res.status(200).send({message: 'Successfully uploaded picture', result})
-    }   catch (err) {
-        console.log(err, 'Invalid err');
-        return res.status(500).send({message: 'Internal server error.'});
-       }
-}
+      if (!req.file) {
+        return res.status(400).send({ message: 'No file uploaded' });
+      }
+      const result = await saveProfilePicture(req.file);
+      return res.status(200).send(result);
+    } catch (error) {
+      console.error('Error:', error);
+      return res.status(500).send({ message: 'Internal server error'});
+    }
+  };
 
 
 export const userRegistrationHandler = async (req:express.Request, res: express.Response) => {
