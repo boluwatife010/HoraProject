@@ -17,10 +17,6 @@ const oauth2Client = new OAuth2Client(
 oauth2Client.setCredentials({
   refresh_token: process.env.REFRESH_TOKEN,
 });
-import multer from 'multer';
-const upload = multer({
-  storage: multer.memoryStorage(), 
-});
 const Attachment = createModel({
   modelName: 'Attachment',
   connection: mongoose.connection,
