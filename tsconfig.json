@@ -22,8 +22,6 @@
   "exclude": [
     "node_modules/",
     "dist/",
-    "build/",
-    "./test",
     "src/test/*"
   ],
   "include": ["*.ts","src/**/*",  "src/**/*.d.ts"]
