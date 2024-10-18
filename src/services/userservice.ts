@@ -6,10 +6,8 @@ import nodemailer from 'nodemailer';
 import { generateOtp} from "../utils/generateOtp";
 import {sendEmail} from '../utils/sendmail'
 import { taskModel } from "../models/taskmodel";
-import multer, {StorageEngine} from 'multer';
-import express from 'express';
-import path from 'path';
-
+import mongoose from 'mongoose';
+import { createModel } from 'mongoose-gridfs'
 import { OAuth2Client } from 'google-auth-library';
 const oauth2Client = new OAuth2Client(
   process.env.CLIENT_ID,
@@ -19,25 +17,42 @@ const oauth2Client = new OAuth2Client(
 oauth2Client.setCredentials({
   refresh_token: process.env.REFRESH_TOKEN,
 });
-const storage: StorageEngine = multer.diskStorage({
-  destination: (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
-    cb(null, 'src/uploads/');
-  },
-  filename: (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
+import multer from 'multer';
+const upload = multer({
+  storage: multer.memoryStorage(), 
 });
+const Attachment = createModel({
+  modelName: 'Attachment',
+  connection: mongoose.connection,
+});
+ 
+export const saveProfilePicture = async (file: Express.Multer.File) => {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      reject(new Error('No file provided'));
+    }
 
-export const upload = multer({ storage });
-export const userProfilePicture = (file: Express.Multer.File | undefined, id: string) => {
-  if (!file) {
-    throw new Error('File upload failed');
-  }
-  return {
-    message: 'File uploaded successfully',
-    filePath: `/uploads/${file.filename}`,
-  };
+    const { originalname, buffer, mimetype } = file;
+
+    // Create a write stream to GridFS
+    const writeStream = Attachment.write({
+      filename: originalname,
+      contentType: mimetype,
+    });
+
+    writeStream.end(buffer);
+
+    writeStream.on('finish', () => {
+      resolve({
+        message: 'File uploaded successfully',
+        fileId: writeStream.id,
+      });
+    });
+
+    writeStream.on('error', () => {
+      reject(new Error('File upload failed'));
+    });
+  });
 };
 export const registerUser = async (body: registerRequestBody):Promise <any> => {
     const {email, password, username} = body;
@@ -316,3 +331,30 @@ export const verifyOTP = async (email: string, otp: string): Promise<any> => {
   await sendEmail(email, 'Your new OTP', `Your OTP is ${otp}`);
   return { message: 'A new OTP has been sent to your email.' };
 };
+
+
+
+// import multer, {StorageEngine} from 'multer';
+// import express from 'express';
+// import path from 'path';
+
+// const storage: StorageEngine = multer.diskStorage({
+//   destination: (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
+//     cb(null, 'src/uploads/');
+//   },
+//   filename: (req: express.Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
+//     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//     cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+//   }
+// });
+
+// export const upload = multer({ storage });
+// export const userProfilePicture = (file: Express.Multer.File | undefined, id: string) => {
+//   if (!file) {
+//     throw new Error('File upload failed');
+//   }
+//   return {
+//     message: 'File uploaded successfully',
+//     filePath: `/uploads/${file.filename}`,
+//   };
+//};

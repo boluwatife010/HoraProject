@@ -6,8 +6,16 @@ import { userModel } from "../models/usermodel";
 import { createGroupTaskBody, invitationRequestBody, updateGroupRequest } from "../interfaces/group";
 import {v4 as uuidv4} from 'uuid';
 
+function generateInviteCode(length: number = 6): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxys0123456789';
+    let inviteCode = '';
+    for (let i = 0; i < length; i++ ) {
+        inviteCode += characters.charAt(Math.floor(Math.random() * characters.length))
+    }
+    return inviteCode;
+}
 export const createGroup = async (groupName:string, userId: string):Promise<any> => {
-    const inviteLink = uuidv4();
+    const inviteLink = generateInviteCode(6)
     const expiresAt = new Date(Date.now() + 24*60*60*1000);
     const newGroup = new groupModel({
         name: groupName,
