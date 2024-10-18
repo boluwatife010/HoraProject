@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 import { authenticateToken } from '../auth/auth';
-import { userRegistrationHandler, uploadProfilePictureHandler,
+import { userRegistrationHandler, 
      userLoginHandler, updateUserHandler, resendUserOtpHandle,
      getAUserHandler,deleteAUserHandler, getAllUsersHandler, forgotPasswordHandler,
       resetPasswordHandler, changePasswordHandler, calculateProgressHandler,
@@ -20,6 +20,6 @@ router.get('/', getAllUsersHandler);
 router.get('/progress/:userId', calculateProgressHandler)
 router.delete('/delete/:id', authenticateToken,  deleteAUserHandler);
 router.put('/update-streak/:userid',authenticateToken, updateStreakHandler)
-router.post('/upload-picture/:userId',uploadProfilePictureHandler)
+//router.post('/upload-picture/:userId',uploadProfilePictureHandler)
 router.post('/resend-otp/:id', resendUserOtpHandle)
 export default router;
