@@ -3,7 +3,7 @@ import passport from 'passport';
 import { authenticateToken } from '../auth/auth';
 import { userRegistrationHandler, 
      userLoginHandler, updateUserHandler, resendUserOtpHandle,
-     getAUserHandler,deleteAUserHandler, getAllUsersHandler, forgotPasswordHandler,uploadProfilePictureHandler,
+     getAUserHandler,deleteAUserHandler, getAllUsersHandler, forgotPasswordHandler,
       resetPasswordHandler, changePasswordHandler, calculateProgressHandler,
       verifyOtpHandler, verifyEmailOtpHandler,updateStreakHandler} from '../controllers/user.controller';
 const router = express.Router()
@@ -20,6 +20,6 @@ router.get('/', getAllUsersHandler);
 router.get('/progress/:userId', calculateProgressHandler)
 router.delete('/delete/:id', authenticateToken,  deleteAUserHandler);
 router.put('/update-streak/:userid',authenticateToken, updateStreakHandler)
-router.post('/upload-picture/:userId',uploadProfilePictureHandler)
+//router.post('/upload-picture/:userId',uploadProfilePictureHandler)
 router.post('/resend-otp/:id', resendUserOtpHandle)
 export default router;

@@ -7,7 +7,7 @@ import { generateOtp} from "../utils/generateOtp";
 import {sendEmail} from '../utils/sendmail'
 import { taskModel } from "../models/taskmodel";
 import mongoose from 'mongoose';
-import { createModel } from 'mongoose-gridfs'
+// import { createModel } from 'mongoose-gridfs'
 import { OAuth2Client } from 'google-auth-library';
 const oauth2Client = new OAuth2Client(
   process.env.CLIENT_ID,
@@ -17,39 +17,39 @@ const oauth2Client = new OAuth2Client(
 oauth2Client.setCredentials({
   refresh_token: process.env.REFRESH_TOKEN,
 });
-const Attachment = createModel({
-  modelName: 'Attachment',
-  connection: mongoose.connection,
-});
+// const Attachment = createModel({
+//   modelName: 'Attachment',
+//   connection: mongoose.connection,
+// });
  
-export const saveProfilePicture = async (file: Express.Multer.File) => {
-  return new Promise((resolve, reject) => {
-    if (!file) {
-      reject(new Error('No file provided'));
-    }
+// export const saveProfilePicture = async (file: Express.Multer.File) => {
+//   return new Promise((resolve, reject) => {
+//     if (!file) {
+//       reject(new Error('No file provided'));
+//     }
 
-    const { originalname, buffer, mimetype } = file;
+//     const { originalname, buffer, mimetype } = file;
 
     // Create a write stream to GridFS
-    const writeStream = Attachment.write({
-      filename: originalname,
-      contentType: mimetype,
-    });
+//     const writeStream = Attachment.write({
+//       filename: originalname,
+//       contentType: mimetype,
+//     });
 
-    writeStream.end(buffer);
+//     writeStream.end(buffer);
 
-    writeStream.on('finish', () => {
-      resolve({
-        message: 'File uploaded successfully',
-        fileId: writeStream.id,
-      });
-    });
+//     writeStream.on('finish', () => {
+//       resolve({
+//         message: 'File uploaded successfully',
+//         fileId: writeStream.id,
+//       });
+//     });
 
-    writeStream.on('error', () => {
-      reject(new Error('File upload failed'));
-    });
-  });
-};
+//     writeStream.on('error', () => {
+//       reject(new Error('File upload failed'));
+//     });
+//   });
+// };
 export const registerUser = async (body: registerRequestBody):Promise <any> => {
     const {email, password, username} = body;
     const existingUser = await userModel.findOne({email});
