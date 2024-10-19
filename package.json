@@ -1,6 +1,7 @@
 {
   "name": "hora",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "start": "node dist/app.js",
@@ -8,7 +9,6 @@
   },
   "main": "dist/app.js",
   "dependencies": {
-    "@lykmapipo/common": "^0.44.5",
     "bcryptjs": "2.4.3",
     "body-parser": "1.20.3",
     "cors": "2.8.5",
