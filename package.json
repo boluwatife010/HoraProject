@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/app.js",
+    "start": "node dist/app.cjs",
     "dev": "ts-node app"
   },
   "main": "dist/app.js",
