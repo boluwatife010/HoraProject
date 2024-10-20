@@ -103,15 +103,15 @@ export const createGroupTaskHandler = async (req: express.Request, res: express.
 }
 export const updateGroupTaskHandler = async (req: express.Request, res: express.Response) => {
     const {title, description, dueDate} = req.body
-    const {groupId} = req.params
+    const {id} = req.params
     try {
-        if (!groupId) {
+        if (!id) {
             return res.status(400).send({message: 'Please provide a valid id.'});
         }
         if (!title || !description || !dueDate) {
             return res.status(400).send({message: 'Please provide the following details'});
         }
-        const updating = await updateGroupTask(groupId, {title, description, dueDate})
+        const updating = await updateGroupTask(id, {title, description, dueDate})
         if (!updating) {
             return res.status(400).send({message: 'Could not update the task'})
         }

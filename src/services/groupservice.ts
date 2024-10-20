@@ -138,8 +138,8 @@ export const createGroupTask = async (body: createGroupTaskBody): Promise<any> =
 
     return newTask;
 };
-export const updateGroupTask = async (groupId: string, updates: updateGroupRequest): Promise<any> => {
-    const task = await taskModel.findByIdAndUpdate(groupId, updates, {new: true});
+export const updateGroupTask = async (id: string, updates: updateGroupRequest): Promise<any> => {
+    const task = await taskModel.findByIdAndUpdate(id, updates, {new: true});
     if (!task) {
       throw new Error('Task not found.');
     }
