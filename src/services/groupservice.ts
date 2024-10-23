@@ -30,6 +30,11 @@ export const createGroup = async (groupName:string, userId: string):Promise<any>
     await newGroup.save();
      return newGroup
 }
+export const updateGroup = async(groupName: string, userId: string): Promise <any> => {
+    if (!groupName) {
+        throw new Error('Please provide a group name ')
+    }
+}
 export const getGroup = async (id:string) => {
     if (!id) {
         throw new Error('Please provide a valid group id')
