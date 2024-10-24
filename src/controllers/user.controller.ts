@@ -1,6 +1,7 @@
+import e from "express";
 import { loginUser, registerUser, getAllUsers, 
     getUser, deleteUser, updateUser, forgotPassword, resetPassword, changePassword, 
-    verifyOTP, verifyEmailOtp, updateStreak, 
+    verifyOTP, verifyEmailOtp, updateStreak, searchUserByUsername, 
     calculateProgress, resendOTP} from "../services/userservice";
 import express from 'express';
 
@@ -238,6 +239,22 @@ export const verifyOtpHandler = async (req: express.Request, res: express.Respon
             res.status(400).send({message: 'Could not resend email'})
         }
         res.status(200).send({message: 'Successfully sent the otp, check your email! :)'})
+    }   catch (err) {
+        console.error('Error updating streak:', err);
+        return res.status(500).json({ message: 'Internal server error.' });
+      }
+  }
+  export const searchUserByUsernameHandler = async (req: express.Request, res: express.Response) => {
+    const {username }= req.query
+    if (!username) {
+        return res.status(400).send({message: 'Please provide a valid username.'})
+    }
+    try {
+        const usernames = await searchUserByUsername(username as string)
+        if (!usernames) {
+            return res.status(400).send({message: 'Could not find users with the usernames.'})
+        }
+        return res.status(200).send({message: 'Succssessfully searched for user name'})
     }   catch (err) {
         console.error('Error updating streak:', err);
         return res.status(500).json({ message: 'Internal server error.' });
