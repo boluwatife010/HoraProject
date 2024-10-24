@@ -6,6 +6,7 @@ const groupSchema = new Schema<Group>({
         type: String, 
         required: true
     },
+    createdBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }],
     type: ['Personal', 'Group'],
     members: [{
         type: mongoose.Schema.Types.ObjectId,

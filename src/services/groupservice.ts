@@ -22,6 +22,7 @@ export const createGroup = async (groupName:string, userId: string):Promise<any>
         inviteLink,
         isFull: false,
         task: [],
+        createdBy: new Types.ObjectId(userId),
         expiresAt
     })
      if (!newGroup) {

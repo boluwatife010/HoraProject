@@ -5,6 +5,7 @@ export interface Group extends Document {
     tasks: mongoose.Types.ObjectId[];
     inviteLink: string;
     isFull: boolean;
+    createdBy: string;
     type: ['Personal', 'Group'];
     createdAt: Date;
     expiresAt: Date;
