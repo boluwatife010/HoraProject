@@ -23,16 +23,16 @@ export const createGroupHandler = async (req: express.Request, res: express.Resp
 }
 export const updateGroupHandler = async (req: express.Request, res: express.Response) => {
     const {groupName} = req.body
-    const {userId} = req.params
-    if (!groupName && !userId) {
+    const {groupId} = req.params
+    if (!groupName && !groupId) {
         return res.status(400).send({message: 'Please provide the groupname or the id in the request.'})
     }
     try {
-        const change = await updateGroup(groupName, userId)
+        const change = await updateGroup(groupName, groupId)
         if (!change) {
             return res.status(400).send({message: 'Could not update the group name.'})
         }
-        return res.status(200).send({message: 'Successfully updated the group name.'})
+        return res.status(200).send({message: 'Successfully updated the group name.', change})
     }    catch (err) {
         console.log(err, 'Invalid err');
         return res.status(500).send({message: 'Internal server error.'}); 

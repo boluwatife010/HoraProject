@@ -10,7 +10,7 @@ router.post('/new-task', createGroupTaskHandler);
 router.put('/update-task/:id', updateGroupTaskHandler);
 router.post('/send-link', createLinkHandler);
 router.post('/:groupId/leave', leaveGroupHandler);
-router.post('/group-name/:userId', updateGroupHandler)
+router.post('/name/:userId', updateGroupHandler)
 router.get('/:id', getGroupHandler)
 router.get('/all-groups/:id', getAllGroupsHandler)
 router.get('/:groupId/task/:taskId', getGroupTaskHandler);

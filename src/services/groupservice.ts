@@ -31,15 +31,20 @@ export const createGroup = async (groupName:string, userId: string):Promise<any>
     await newGroup.save();
      return newGroup
 }
-export const updateGroup = async(groupName: string, userId: string): Promise <any> => {
-    if (!groupName) {
-        throw new Error('Please provide a group name ')
+export const updateGroup = async (groupName: string, groupId: string): Promise<any> => {
+    if (!groupName || !groupId) {
+        throw new Error('Please provide both a group name and user ID.');
     }
-    const group = await groupModel.findByIdAndUpdate(groupName)
+    const group = await groupModel.findOneAndUpdate(
+        { _id: groupId },
+        { name: groupName }, 
+        { new: true } 
+    );
     if (!group) {
-        throw new Error('Could not update the group name')
+        throw new Error('Could not find a group with the provided user ID.');
     }
-}
+    return group;
+};
 export const getGroup = async (id:string) => {
     if (!id) {
         throw new Error('Please provide a valid group id')

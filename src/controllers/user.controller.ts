@@ -246,11 +246,15 @@ export const verifyOtpHandler = async (req: express.Request, res: express.Respon
   }
   export const searchUserByUsernameHandler = async (req: express.Request, res: express.Response) => {
     const { username } = req.query;
-    if (!username) {
+    const {id} = req.params;
+    if (!id) {
+        return res.status(400).send({message: 'Please provide a valid id.'})
+    }
+    if (!username || typeof username !== 'string') {
         return res.status(400).send({ message: 'Please provide a valid username.' });
     }
     try {
-        const usernames = await searchUserByUsername(username as string);
+        const usernames = await searchUserByUsername(username, id);
         if (usernames.length === 0) {
             return res.status(404).send({ message: 'No users found with the provided username.' });
         }

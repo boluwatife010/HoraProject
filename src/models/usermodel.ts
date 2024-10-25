@@ -1,61 +1,62 @@
 import mongoose, { Schema } from 'mongoose';
 import validator from 'validator';
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcryptjs';
 import { Iuser } from '../interfaces/user';
 const userSchema: Schema<Iuser> = new Schema({
-    email: {type: String, 
+    email: {
+        type: String,
         required: function() {
-            return !this.googleId
+            return !this.googleId;
         },
-        unique: true, 
+        unique: true,
         validate: [validator.isEmail, 'This is not a valid email.'],
-        lowercase: true
+        lowercase: true,
     },
     streakCount: { type: Number, default: 0 },
     lastLoginDate: { type: Date, default: null },
     maxStreak: { type: Number, default: 0 },
-    password: {type: String,
-        required: function () {
-            return !this.googleId
+    password: {
+        type: String,
+        required: function() {
+            return !this.googleId;
         },
-        bcrypt: true,
         minlength: [6, 'Your minimum length of character is 6.'],
-        rounds: 10},
-    username: {type: String,
-      required: function () {
-            return !this.googleId
+    },
+    username: {
+        type: String,
+        required: function() {
+            return !this.googleId;
         },
         unique: true,
-        min:[3, 'Your username should be 3 characters long.'], 
-        max: [20, 'Your useername should  be less than 20 characters.']
-      },
-    googleId: {type: String},
-    socketId: {type: String},
-    name: {type: String},
-    token: {type: String},
-    profilepicture: {type:String},
-    createdAt: {type: Date, default: Date.now},
-    updatedAt: {type: Date, default: Date.now},
+        minlength: [3, 'Your username should be at least 3 characters long.'],
+        maxlength: [20, 'Your username should be less than 20 characters.'],
+    },
+    googleId: { type: String },
+    socketId: { type: String },
+    name: { type: String },
+    token: { type: String },
+    profilepicture: { type: String },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
     points: { type: Number, default: 100 },
     dailyCompletedTasks: { type: Number, default: 0 },
-    onetime: {type: String, required: false},
-    otpExpires: {type: Date, required: false},
-    isVerified: {type: Boolean, required: false}
-})
+    onetime: { type: String },
+    otpExpires: { type: Date },
+    isVerified: { type: Boolean, default: false },
+});
 userSchema.pre<Iuser>('save', async function (next) {
     if (!this.isModified('password')) return next();
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
-  });
-userSchema.methods.comparePassword = function (password: string): Promise<boolean> {
+});
+userSchema.methods.comparePassword = async function (password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
-  };
-  userSchema.pre<Iuser>('save', function (next) {
+};
+userSchema.pre<Iuser>('save', function (next) {
     this.updatedAt = new Date();
     next();
-  });
- export const userModel = mongoose.model<Iuser>('User', userSchema);
- 
+});
+export const userModel = mongoose.model<Iuser>('User', userSchema);
