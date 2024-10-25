@@ -245,18 +245,21 @@ export const verifyOtpHandler = async (req: express.Request, res: express.Respon
       }
   }
   export const searchUserByUsernameHandler = async (req: express.Request, res: express.Response) => {
-    const {username }= req.query
+    const { username } = req.query;
     if (!username) {
-        return res.status(400).send({message: 'Please provide a valid username.'})
+        return res.status(400).send({ message: 'Please provide a valid username.' });
     }
     try {
-        const usernames = await searchUserByUsername(username as string)
-        if (!usernames) {
-            return res.status(400).send({message: 'Could not find users with the usernames.'})
+        const usernames = await searchUserByUsername(username as string);
+        if (usernames.length === 0) {
+            return res.status(404).send({ message: 'No users found with the provided username.' });
         }
-        return res.status(200).send({message: 'Succssessfully searched for user name'})
-    }   catch (err) {
-        console.error('Error updating streak:', err);
+        return res.status(200).send({
+            message: 'Successfully retrieved users with the provided username.',
+            data: usernames
+        });
+    } catch (err) {
+        console.error('Error searching for usernames:', err);
         return res.status(500).json({ message: 'Internal server error.' });
-      }
-  }
+    }
+};

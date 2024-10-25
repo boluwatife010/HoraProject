@@ -329,15 +329,15 @@ export const verifyOTP = async (email: string, otp: string): Promise<any> => {
 };
 
 export const searchUserByUsername = async (username: string) => {
-if (!username) {
-  throw new Error ('Please provide a username in the query parameters.')
-}
-const names = await userModel.find({username: username})
-if (!names) {
-  throw new Error('Could not find users with the following usernames')
-}
-return names;
-}
+  if (!username) {
+      throw new Error('Please provide a username in the query parameters.');
+  }
+  const names = await userModel.find({ username });
+  if (names.length === 0) {
+      throw new Error('No users found with the provided username.');
+  }
+  return names;
+};
 
 // import multer, {StorageEngine} from 'multer';
 // import express from 'express';
