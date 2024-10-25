@@ -2,7 +2,8 @@
 import { createGroup, createLink, joinGroup, createGroupTask , updateGroupTask, completeTask, 
     leaveGroup, getAllGroupTasks, deleteGroupTask, getGroupTask,
     deleteUserFromGroup, getAllGroups, getGroup,
-    getLeaderboard} from "../services/groupservice";
+    getLeaderboard,
+    updateGroup} from "../services/groupservice";
 import express from 'express';
 export const createGroupHandler = async (req: express.Request, res: express.Response) => {
     const {groupName, userId} = req.body
@@ -19,6 +20,23 @@ export const createGroupHandler = async (req: express.Request, res: express.Resp
         console.log(err, 'Invalid err');
         return res.status(500).send({message: 'Internal server error.'}); 
     }
+}
+export const updateGroupHandler = async (req: express.Request, res: express.Response) => {
+    const {groupName} = req.body
+    const {userId} = req.params
+    if (!groupName && !userId) {
+        return res.status(400).send({message: 'Please provide the groupname or the id in the request.'})
+    }
+    try {
+        const change = await updateGroup(groupName, userId)
+        if (!change) {
+            return res.status(400).send({message: 'Could not update the group name.'})
+        }
+        return res.status(200).send({message: 'Successfully updated the group name.'})
+    }    catch (err) {
+        console.log(err, 'Invalid err');
+        return res.status(500).send({message: 'Internal server error.'}); 
+    }  
 }
 export const createLinkHandler = async (req: express.Request, res: express.Response) => {
     const {groupId, email, inviterId } = req.body

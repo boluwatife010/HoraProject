@@ -332,7 +332,7 @@ export const searchUserByUsername = async (username: string) => {
 if (!username) {
   throw new Error ('Please provide a username in the query parameters.')
 }
-const names = await userModel.find({username})
+const names = await userModel.find({username: username})
 if (!names) {
   throw new Error('Could not find users with the following usernames')
 }

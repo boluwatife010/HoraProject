@@ -35,6 +35,10 @@ export const updateGroup = async(groupName: string, userId: string): Promise <an
     if (!groupName) {
         throw new Error('Please provide a group name ')
     }
+    const group = await groupModel.findByIdAndUpdate(groupName)
+    if (!group) {
+        throw new Error('Could not update the group name')
+    }
 }
 export const getGroup = async (id:string) => {
     if (!id) {
