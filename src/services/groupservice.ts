@@ -31,12 +31,12 @@ export const createGroup = async (groupName:string, userId: string):Promise<any>
     await newGroup.save();
      return newGroup
 }
-export const updateGroup = async (groupName: string, groupId: string): Promise<any> => {
-    if (!groupName || !groupId) {
+export const updateGroup = async (groupName: string, userId: string): Promise<any> => {
+    if (!groupName || !userId) {
         throw new Error('Please provide both a group name and user ID.');
     }
     const group = await groupModel.findOneAndUpdate(
-        { _id: groupId },
+        { _id: userId },
         { name: groupName }, 
         { new: true } 
     );
