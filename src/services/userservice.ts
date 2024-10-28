@@ -220,34 +220,37 @@ export const forgotPassword = async (email: string): Promise<any> => {
   }
 };
 export const calculateProgress = async (userId: string) => {
-    const user = await userModel.findById(userId);
-    if (!user) throw new Error('User not found');
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); 
-    const totalTasks = await taskModel.countDocuments({
-        createdBy: userId,
-        dueDate: { $gte: today },
-    });
-    if (totalTasks === 0) {
-        return {
-            progress: `0%`,
-            completedTasks: 0,
-            totalTasks: 0,
-        };
-    }
-    const pointsPerTask = 100 / totalTasks;
-    const progress = (user.dailyCompletedTasks / totalTasks) * 100
-    const accumulatedPoints = Math.min(user.dailyCompletedTasks * pointsPerTask, 100);
-    user.points = accumulatedPoints;
-    await user.save();
-    
-    return {
-        progress: `${progress.toFixed(2)}%`,
-        completedTasks: user.dailyCompletedTasks,
-        totalTasks,
-        points: accumulatedPoints,
-    };
-    };
+  const user = await userModel.findById(userId);
+  if (!user) throw new Error('User not found');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); 
+  const totalTasks = await taskModel.countDocuments({
+      createdBy: userId,
+      dueDate: { $gte: today },
+  });
+
+  if (totalTasks === 0) {
+      return {
+          progress: `0%`,
+          completedTasks: 0,
+          totalTasks: 0,
+          points: 0,
+      };
+  }
+  const progress = (user.dailyCompletedTasks / totalTasks) * 100;
+  const pointsPerTask = 100 / totalTasks;
+  const accumulatedPoints = Math.min(user.dailyCompletedTasks * pointsPerTask, 100);
+  user.points = accumulatedPoints;
+  await user.save();
+  
+  return {
+      progress: `${progress.toFixed(2)}%`,
+      completedTasks: user.dailyCompletedTasks,
+      totalTasks,
+      points: accumulatedPoints,
+  };
+};
+
 export const resetPassword = async (email: string, newPassword:string, otp:string): Promise<any> => {
     console.log("Resetting password for email:", email);
     console.log("Provided OTP:", otp); 

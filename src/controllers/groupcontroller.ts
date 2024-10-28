@@ -3,7 +3,8 @@ import { createGroup, createLink, joinGroup, createGroupTask , updateGroupTask, 
     leaveGroup, getAllGroupTasks, deleteGroupTask, getGroupTask,
     deleteUserFromGroup, getAllGroups, getGroup,
     getLeaderboard,
-    updateGroup} from "../services/groupservice";
+    updateGroup,
+    deleteGroup} from "../services/groupservice";
 import express from 'express';
 export const createGroupHandler = async (req: express.Request, res: express.Response) => {
     const {groupName, userId} = req.body
@@ -247,6 +248,22 @@ export const getLeaderBoardHandler = async (req: express.Request, res: express.R
         }
         return res.status(200).send({message: 'Successfully got the leaderboard', lead})
     }  catch (err) {
+        console.log(err, 'Invalid err');
+        return res.status(500).send({message: 'Internal server error.'}); 
+    } 
+}
+export const  deleteGroupHandler = async (req: express.Request, res: express.Response) => {
+    const {groupId} = req.params
+    if (!groupId) {
+        return res.status(400).send({message: 'Please provide a valid id.'})
+    }
+    try {
+        const deletes = await deleteGroup(groupId)
+        if (!deletes) {
+            return res.status(400).send({message: 'Could not delete the group'})
+        }
+        return res.status(200).send({message: 'Successfully deleted the group.'})
+    }   catch (err) {
         console.log(err, 'Invalid err');
         return res.status(500).send({message: 'Internal server error.'}); 
     } 

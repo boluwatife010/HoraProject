@@ -242,3 +242,10 @@ export const getLeaderboard = async (groupId: string) => {
         dailyCompletedTasks: user.dailyCompletedTasks,
     }));
 };
+export const deleteGroup = async (groupId: string) => {
+    const deletes = await groupModel.findByIdAndDelete(groupId)
+    if(!deletes) {
+        throw new Error('Could not delete group')
+    }
+    return deletes
+}

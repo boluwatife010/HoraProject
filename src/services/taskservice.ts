@@ -105,20 +105,23 @@ export const deleteTask = async (id: string): Promise<any> => {
     return deleted
 }
 
-export const getTasksForDay = async (userId: string, date: Date): Promise<any> => {
-    const startOfDay = new Date(date.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(date.setHours(23, 59, 59, 999));
-  
-    const tasks = await taskModel.find({
-      createdBy: userId,
-      dueDate: { $gte: startOfDay, $lt: endOfDay }
-    });
-  
-    const completedTasks = tasks.filter(task => task.completed).length;
-    const progress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
-  
-    return { tasks, completedTasks, totalTasks: tasks.length, progress };
-  };
+export const getTasksForDays = async (userId: string): Promise<any> => {
+  const now = new Date();
+  const startOfYesterday = new Date(now);
+  startOfYesterday.setDate(now.getDate() - 1);
+  startOfYesterday.setHours(0, 0, 0, 0); 
+  const endOfToday = new Date(now);
+  endOfToday.setHours(23, 59, 59, 999); 
+  const tasks = await taskModel.find({
+    createdBy: userId,
+    dueDate: { $gte: startOfYesterday, $lt: endOfToday }
+  });
+  const completedTasks = tasks.filter(task => task.completed).length;
+  const progress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
+
+  return { tasks, completedTasks, totalTasks: tasks.length, progress };
+};
+
 
 export const updateTaskStatus = async (taskId: string, completed: boolean): Promise<any> => {
     const task = await taskModel.findById(taskId);

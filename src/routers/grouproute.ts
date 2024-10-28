@@ -1,7 +1,7 @@
 import express from 'express';
 import { createGroupHandler, createLinkHandler, updateGroupTaskHandler,
      getGroupTaskHandler, getAllGroupTasksHandler, getAllGroupsHandler, getGroupHandler,
-    joinGroupHandler, createGroupTaskHandler, deleteGroupTaskHandler, 
+    joinGroupHandler, createGroupTaskHandler, deleteGroupTaskHandler, deleteGroupHandler,
     deleteUserHandler,leaveGroupHandler, getLeaderBoardHandler, updateGroupHandler} from '../controllers/groupcontroller';
 const router = express.Router();
 router.post('/create', createGroupHandler);
@@ -18,4 +18,5 @@ router.get('/:groupId/tasks', getAllGroupTasksHandler);
 router.delete('/:groupId/member/:userId', deleteUserHandler);
 router.delete('/:groupId/task/:taskId', deleteGroupTaskHandler);
 router.get('/leaderboard/:groupId', getLeaderBoardHandler)
+router.delete('/delete-group/:groupId', deleteGroupHandler)
 export default router;

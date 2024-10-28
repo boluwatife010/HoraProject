@@ -1,6 +1,6 @@
 import express from 'express';
 import { createTask, getATask, getAllTasks, updateTask, searchTask, 
-    deleteTask, getTasksForDay, updateTaskStatus } from '../services/taskservice';
+    deleteTask, getTasksForDays, updateTaskStatus } from '../services/taskservice';
 import mongoose from 'mongoose';
 
 
@@ -114,22 +114,28 @@ export const deleteTaskHandler = async (req: express.Request, res: express.Respo
     }
 }
 export const GetTaskForDayHandler = async (req: express.Request, res: express.Response) => {
-    const {userId} = req.body;
-    const date = req.query.date ? new Date(req.query.date as string): new Date()
-    try {
-        if (!userId && !date) {
-            return res.status(400).send({message: 'Please provide the required details.'})
-        }
-        const tasks = await getTasksForDay(userId, date);
-        if (!tasks) {
-            return res.status(400).send({message: 'Could not get tasks for the day.'})
-        }
-        return res.status(200).send({message: 'Succsessfully got the tasks for the day', tasks});
-    }   catch (err) {
-        console.log(err, 'Invalid err');
-        return res.status(500).send({message: 'Internal server error.'}); 
+    const { userId } = req.params;
+    if (!userId) {
+        return res.status(400).send({ message: 'Please provide a valid user ID.' });
     }
-}
+    try {
+        const tasksData = await getTasksForDays(userId);
+        if (!tasksData) {
+            return res.status(404).send({ message: 'No tasks found for the specified day.' });
+        }
+        return res.status(200).send({
+            message: 'Successfully retrieved tasks for the day',
+            tasks: tasksData.tasks,
+            completedTasks: tasksData.completedTasks,
+            totalTasks: tasksData.totalTasks,
+            progress: tasksData.progress
+        });
+    } catch (err) {
+        console.error('Error fetching tasks:', err);
+        return res.status(500).send({ message: 'Internal server error.' });
+    }
+};
+
 export const updateTaskStatusHandler = async (req: express.Request, res: express.Response) => {
     const {taskId} = req.params;
     const {completed} = req.body
