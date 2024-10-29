@@ -1,5 +1,5 @@
 
-import { createGroup, createLink, joinGroup, createGroupTask , updateGroupTask, completeTask, 
+import { createGroup, inviteGroupLink, joinGroup, createGroupTask , updateGroupTask, completeTask, 
     leaveGroup, getAllGroupTasks, deleteGroupTask, getGroupTask,
     deleteUserFromGroup, getAllGroups, getGroup,
     getLeaderboard,
@@ -39,13 +39,13 @@ export const updateGroupHandler = async (req: express.Request, res: express.Resp
         return res.status(500).send({message: 'Internal server error.'}); 
     }  
 }
-export const createLinkHandler = async (req: express.Request, res: express.Response) => {
+export const inviteGroupLinkHandler = async (req: express.Request, res: express.Response) => {
     const {groupId, email, inviterId } = req.body
     try {
-        if (!groupId || !email || !inviterId) {
+        if (!groupId && !email && !inviterId) {
             return res.status(400).send({message: 'Please provide the following details'})
         }
-        const link = await createLink({groupId, inviterId, email})
+        const link = await inviteGroupLink({groupId, inviterId, email})
         if (!link) {
             return res.status(400).send({message: 'Could not send link to send to members'})
         }

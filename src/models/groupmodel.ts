@@ -48,8 +48,7 @@ const invationSchema = new Schema ({
     },
     invitedBy: {
         type: Schema.Types.ObjectId,
-        ref: 'user',
-        required: true
+        ref: 'user'
     },
     status: {
         type: String,

@@ -13,24 +13,30 @@ function generateInviteCode(length: number = 6): string {
     }
     return inviteCode;
 }
-export const createGroup = async (groupName:string, userId: string):Promise<any> => {
-    const inviteLink = generateInviteCode(6)
-    const expiresAt = new Date(Date.now() + 24*60*60*1000);
-    const newGroup = new groupModel({
-        name: groupName,
-        members: [new Types.ObjectId(userId)],
-        inviteLink,
-        isFull: false,
-        task: [],
-        createdBy: new Types.ObjectId(userId),
-        expiresAt
-    })
-     if (!newGroup) {
-        throw new Error('Please provide all the valid requirement');
-     }
-    await newGroup.save();
-     return newGroup
-}
+export const createGroup = async (groupName: string, userId: string): Promise<any> => {
+  const inviteLink = generateInviteCode(6);
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const newGroup = new groupModel({
+    name: groupName,
+    members: [new Types.ObjectId(userId)],
+    inviteLink,
+    isFull: false,
+    task: [],
+    createdBy: new Types.ObjectId(userId),
+    expiresAt,
+  });
+  if (!newGroup) {
+    throw new Error('Please provide all the valid requirements');
+  }
+  await newGroup.save();
+  const populatedGroup = await groupModel
+    .findById(newGroup._id)
+    .populate('createdBy', '-password') 
+    .populate('members', '-password');  
+
+  return populatedGroup;
+};
+
 export const updateGroup = async (groupName: string, userId: string): Promise<any> => {
     if (!groupName || !userId) {
         throw new Error('Please provide both a group name and user ID.');
@@ -65,7 +71,7 @@ export const getAllGroups = async (id: string) => {
     }
     return allGroups;
 }
-export const createLink = async (body: invitationRequestBody)=> {
+export const inviteGroupLink = async (body: invitationRequestBody)=> {
     const {groupId, inviterId, email} = body;
     if(!groupId && !inviterId && !email) {
         throw new Error ('Please provide any of the following details')
@@ -101,7 +107,7 @@ export const createLink = async (body: invitationRequestBody)=> {
         text: `You have been invited to join the group "${group.name}". Click the link to join: ${process.env.FRONTEND_URL}/join/${group.inviteLink}`
     }
     await transporter.sendMail(mailOptions);
-    return {message: 'Invitation sent successfully'}
+    return {invitation}
 }
 export const joinGroup = async (userId: string, inviteLink: string): Promise<any> => {
     const userObjectId = new Types.ObjectId(userId);

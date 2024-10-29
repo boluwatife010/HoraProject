@@ -1,5 +1,5 @@
 import express from 'express';
-import { createGroupHandler, createLinkHandler, updateGroupTaskHandler,
+import { createGroupHandler, inviteGroupLinkHandler, updateGroupTaskHandler,
      getGroupTaskHandler, getAllGroupTasksHandler, getAllGroupsHandler, getGroupHandler,
     joinGroupHandler, createGroupTaskHandler, deleteGroupTaskHandler, deleteGroupHandler,
     deleteUserHandler,leaveGroupHandler, getLeaderBoardHandler, updateGroupHandler} from '../controllers/groupcontroller';
@@ -8,7 +8,7 @@ router.post('/create', createGroupHandler);
 router.post('/join', joinGroupHandler)
 router.post('/new-task', createGroupTaskHandler);
 router.put('/update-task/:id', updateGroupTaskHandler);
-router.post('/send-link', createLinkHandler);
+router.post('/send-link', inviteGroupLinkHandler);
 router.post('/:groupId/leave', leaveGroupHandler);
 router.post('/name/:userId', updateGroupHandler)
 router.get('/:id', getGroupHandler)

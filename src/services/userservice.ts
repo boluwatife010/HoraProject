@@ -6,50 +6,16 @@ import nodemailer from 'nodemailer';
 import { generateOtp} from "../utils/generateOtp";
 import {sendEmail} from '../utils/sendmail'
 import { taskModel } from "../models/taskmodel";
-import mongoose from 'mongoose';
-// import { createModel } from 'mongoose-gridfs'
 import { OAuth2Client } from 'google-auth-library';
-const oauth2Client = new OAuth2Client(
-  process.env.CLIENT_ID,
-  process.env.CLIENT_SECRET,
-  "https://developers.google.com/oauthplayground"
-);
-oauth2Client.setCredentials({
-  refresh_token: process.env.REFRESH_TOKEN,
-});
-// const Attachment = createModel({
-//   modelName: 'Attachment',
-//   connection: mongoose.connection,
+// const oauth2Client = new OAuth2Client(
+//   process.env.CLIENT_ID,
+//   process.env.CLIENT_SECRET,
+//   "https://developers.google.com/oauthplayground"
+// );
+
+// oauth2Client.setCredentials({
+//   refresh_token: process.env.REFRESH_TOKEN,
 // });
- 
-// export const saveProfilePicture = async (file: Express.Multer.File) => {
-//   return new Promise((resolve, reject) => {
-//     if (!file) {
-//       reject(new Error('No file provided'));
-//     }
-
-//     const { originalname, buffer, mimetype } = file;
-
-    // Create a write stream to GridFS
-//     const writeStream = Attachment.write({
-//       filename: originalname,
-//       contentType: mimetype,
-//     });
-
-//     writeStream.end(buffer);
-
-//     writeStream.on('finish', () => {
-//       resolve({
-//         message: 'File uploaded successfully',
-//         fileId: writeStream.id,
-//       });
-//     });
-
-//     writeStream.on('error', () => {
-//       reject(new Error('File upload failed'));
-//     });
-//   });
-// };
 export const registerUser = async (body: registerRequestBody):Promise <any> => {
     const {email, password, username} = body;
     const existingUser = await userModel.findOne({email});
@@ -185,35 +151,35 @@ export const forgotPassword = async (email: string): Promise<any> => {
   }
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   user.resetPasswordToken = otp;
-  user.resetPasswordExpires = new Date(Date.now() + 3600000); 
+  user.resetPasswordExpires = new Date(Date.now() + 3600000);
   await user.save();
   console.log(`Generated OTP for ${email}: ${otp}`);
   try {
-    const accessTokenObj = await oauth2Client.getAccessToken();
-    const accessToken = accessTokenObj?.token;
+    // const accessTokenObj = await oauth2Client.getAccessToken();
+    // if (accessTokenObj instanceof Error) {
+    //   console.error('Access token error:', accessTokenObj.message);
+    //   throw new Error('Failed to generate access token. Please check credentials.');
+    // }
     
-    if (!accessToken) {
-      throw new Error('Failed to generate access token.');
-    }
+    // const accessToken = accessTokenObj?.token;
+    // if (!accessToken) {
+    //   throw new Error('Failed to generate access token.');
+    // }
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: 'Gmail',
       auth: {
-        type: 'OAuth2',
-        user: process.env.EMAIL_USER, 
-        clientId: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
-        refreshToken: process.env.REFRESH_TOKEN,
-        accessToken: accessToken, 
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
       },
-    });
+  });
     const mailOptions = {
-      to: user.email,
-      from: process.env.EMAIL_USER, 
+      to: email,
+      from: process.env.EMAIL_USER,
       subject: 'Password Reset OTP',
       text: `Your OTP for password reset is: ${otp}`,
     };
     await transporter.sendMail(mailOptions);
-    return { message: 'OTP sent to email' };
+    return { message: 'OTP sent to email :)' };
   } catch (err) {
     console.error('Error sending OTP email:', err);
     throw new Error('Failed to send OTP email. Please try again later.');
@@ -366,3 +332,36 @@ export const searchUserByUsername = async (username: string, id: string) => {
 //     filePath: `/uploads/${file.filename}`,
 //   };
 //};
+// const Attachment = createModel({
+//   modelName: 'Attachment',
+//   connection: mongoose.connection,
+// });
+ 
+// export const saveProfilePicture = async (file: Express.Multer.File) => {
+//   return new Promise((resolve, reject) => {
+//     if (!file) {
+//       reject(new Error('No file provided'));
+//     }
+
+//     const { originalname, buffer, mimetype } = file;
+
+    // Create a write stream to GridFS
+//     const writeStream = Attachment.write({
+//       filename: originalname,
+//       contentType: mimetype,
+//     });
+
+//     writeStream.end(buffer);
+
+//     writeStream.on('finish', () => {
+//       resolve({
+//         message: 'File uploaded successfully',
+//         fileId: writeStream.id,
+//       });
+//     });
+
+//     writeStream.on('error', () => {
+//       reject(new Error('File upload failed'));
+//     });
+//   });
+// };
