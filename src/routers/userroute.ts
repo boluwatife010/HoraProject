@@ -21,7 +21,7 @@ router.get('/', getAllUsersHandler);
 router.get('/progress/:userId', calculateProgressHandler)
 router.delete('/delete/:id', authenticateToken,  deleteAUserHandler);
 router.put('/update-streak/:userid',authenticateToken, updateStreakHandler)
-router.get('/username/:id', searchUserByUsernameHandler)
+router.get('/search', searchUserByUsernameHandler)
 //router.post('/upload-picture/:userId',uploadProfilePictureHandler)
 router.post('/resend-otp/:id', resendUserOtpHandle)
 export default router;

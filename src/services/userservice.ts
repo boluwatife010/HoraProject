@@ -297,16 +297,19 @@ export const verifyOTP = async (email: string, otp: string): Promise<any> => {
   return { message: 'A new OTP has been sent to your email.' };
 };
 
-export const searchUserByUsername = async (username: string, id: string) => {
-  if (!username && !id) {
-      throw new Error('Please provide a username in the query parameters and id in the request.');
+export const searchUserByUsername = async (username: string): Promise<any> => {
+  if (!username) {
+    throw new Error('Please provide a username in the query parameters.');
   }
-  const names = await userModel.find({ username: username });
+  const names = await userModel.find({
+    username: { $regex: username, $options: 'i' } 
+  });
   if (names.length === 0) {
-      throw new Error('No users found with the provided username.');
+    throw new Error('No users found with the provided username.');
   }
   return names;
 };
+
 
 // import multer, {StorageEngine} from 'multer';
 // import express from 'express';
