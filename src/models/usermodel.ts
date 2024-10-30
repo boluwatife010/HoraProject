@@ -17,16 +17,13 @@ const userSchema: Schema<Iuser> = new Schema({
     maxStreak: { type: Number, default: 0 },
     password: {
         type: String,
-        required: function() {
-            return !this.googleId;
-        },
+        // required: function() {
+        //     return !this.googleId;
+        // },
         minlength: [6, 'Your minimum length of character is 6.'],
     },
     username: {
         type: String,
-        required: function() {
-            return !this.googleId;
-        },
         unique: true,
         minlength: [3, 'Your username should be at least 3 characters long.'],
         maxlength: [20, 'Your username should be less than 20 characters.'],

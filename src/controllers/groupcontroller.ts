@@ -104,12 +104,12 @@ export const getAllGroupsHandler = async (req: express.Request, res: express.Res
     }
 }
 export const createGroupTaskHandler = async (req: express.Request, res: express.Response) => {
-    const {groupId, title, description, dueDate} = req.body;
+    const {groupId, title, description, dueDate, repeatTask, time} = req.body;
     try {
-        if (!groupId || !title || !description || !dueDate) {
+        if (!groupId || !title || !description || !dueDate || !repeatTask || !time) {
             return res.status(400).send({message: 'Please provide one of the following details'})
         }
-        const task = await createGroupTask({title, description, dueDate, groupId})
+        const task = await createGroupTask({title, description, dueDate, groupId, time, repeatTask})
         if (!task) {
             return res.status(400).send({message: 'Could not crete group tasks'})
         }

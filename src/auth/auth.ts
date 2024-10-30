@@ -1,6 +1,6 @@
 import jwt,{ Secret} from 'jsonwebtoken';
 import express from 'express';
-import { Iuser, User } from '../interfaces/user';
+import {  User } from '../interfaces/user';
 require('dotenv').config();
 export const generateAuthToken = (userId: string): string => {
     const token = jwt.sign({userId}, process.env.JWT_SECRET as Secret, {expiresIn: '30d'});

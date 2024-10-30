@@ -130,9 +130,9 @@ export const joinGroup = async (userId: string, inviteLink: string): Promise<any
     return group;
 }
 export const createGroupTask = async (body: createGroupTaskBody): Promise<any> => {
-    const { title, groupId, description, dueDate } = body;
+    const { title, groupId, description, dueDate,  repeatTask, time } = body;
 
-    if (!groupId && !title && !description && !dueDate) {
+    if (!groupId && !title && !description && !dueDate && !repeatTask && !time) {
         throw new Error('Please provide all the required details');
     }
     const groupObjectId = new Types.ObjectId(groupId);
@@ -150,6 +150,8 @@ export const createGroupTask = async (body: createGroupTaskBody): Promise<any> =
         type: ['Group'],
         description,
         dueDate,
+        repeatTask,
+        time,
         groupId: groupObjectId,
         createdBy: createdByUser,
     });

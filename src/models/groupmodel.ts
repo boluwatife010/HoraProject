@@ -16,6 +16,16 @@ const groupSchema = new Schema<Group>({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Task'
     }],
+    repeatTask: [{
+        type: String,
+        enum: ['daily', 'weekly', 'none'],
+        default: 'none'
+    }],
+    dueDate: {
+        type: Date,
+        required: false
+    },
+    time : {type: String},
     inviteLink: {
         type: String,
         required: true

@@ -5,10 +5,13 @@ export interface Group extends Document {
     tasks: mongoose.Types.ObjectId[];
     inviteLink: string;
     isFull: boolean;
+    repeatTask: 'daily' | 'weekly' |  'none';
     createdBy: string;
     type: ['Personal', 'Group'];
     createdAt: Date;
     expiresAt: Date;
+    dueDate: Date;
+    time: string;
 }
 export interface updateGroupRequest {
     title: string;
@@ -31,4 +34,7 @@ export interface createGroupTaskBody {
     title: string;
     description: string;
     dueDate: Date;
+    repeatTask?:  'daily' | 'weekly' | 'monthly' | 'none';
+    time: string
+
 }
