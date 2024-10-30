@@ -37,17 +37,21 @@ export const createGroup = async (groupName: string, userId: string): Promise<an
   return populatedGroup;
 };
 
-export const updateGroup = async (groupName: string, userId: string): Promise<any> => {
+export const updateGroup = async (groupName: string, userId: string, email?: string): Promise<any> => {
     if (!groupName || !userId) {
         throw new Error('Please provide both a group name and user ID.');
     }
+    const updateFields: any = { name: groupName };
+    if (email) {
+        updateFields.email = email;
+    }
     const group = await groupModel.findOneAndUpdate(
         { _id: userId },
-        { name: groupName }, 
-        { new: true } 
+        updateFields,
+        { new: true }
     );
     if (!group) {
-        throw new Error('Could not find a group with the provided user ID.');
+        throw new Error('Group not found or could not be updated.');
     }
     return group;
 };
