@@ -35,7 +35,7 @@ app.use(session({
   // added cors for frontend connection
   const allowedOrigins = [
     process.env.FRONTEND_URL || 'https://hora-1daj.onrender.com',
-    'http://localhost:5173'
+    'http://localhost:5173', 'https://hora-student-app.vercel.app'
 ];
 
 app.use(cors({
