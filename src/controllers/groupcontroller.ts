@@ -40,12 +40,12 @@ export const updateGroupHandler = async (req: express.Request, res: express.Resp
     }  
 }
 export const inviteGroupLinkHandler = async (req: express.Request, res: express.Response) => {
-    const {groupId, email, inviterId } = req.body
+    const {groupId, emails, inviterId } = req.body
     try {
-        if (!groupId && !email && !inviterId) {
+        if (!groupId && !emails && !inviterId) {
             return res.status(400).send({message: 'Please provide the following details'})
         }
-        const link = await inviteGroupLink({groupId, inviterId, email})
+        const link = await inviteGroupLink({groupId, inviterId, emails})
         if (!link) {
             return res.status(400).send({message: 'Could not send link to send to members'})
         }

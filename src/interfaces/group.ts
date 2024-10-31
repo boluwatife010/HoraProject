@@ -26,7 +26,7 @@ export interface Invitation extends Document{
 }
 export interface invitationRequestBody {
     groupId: string;
-    email: string;
+    emails: string[];
     inviterId: string
 }
 export interface createGroupTaskBody {

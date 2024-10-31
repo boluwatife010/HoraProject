@@ -32,7 +32,7 @@ export const createGroup = async (groupName: string, userId: string): Promise<an
   const populatedGroup = await groupModel
     .findById(newGroup._id)
     .populate('createdBy', '-password') 
-    .populate('members', '-password');  
+    // .populate('members', '-password');  
 
   return populatedGroup;
 };
@@ -55,48 +55,41 @@ export const updateGroup = async (groupName: string, userId: string, email?: str
     }
     return group;
 };
-export const getGroup = async (id:string) => {
+export const getGroup = async (id: string) => {
     if (!id) {
-        throw new Error('Please provide a valid group id')
+        throw new Error('Please provide a valid group id');
     }
-    const groups = await groupModel.findById(id);
-    if (!groups) {
-        throw new Error('Could not get the specific group with the specific id')
+    const group = await groupModel.findById(id)
+        .populate('createdBy', 'name email') 
+        .populate('members', 'name email');  
+
+    if (!group) {
+        throw new Error('Could not get the specific group with the provided id');
     }
-    return groups;
-}
+    return group;
+};
 export const getAllGroups = async (id: string) => {
-    if (!id) {
-        throw new Error('Please provide a valid group id')
-    }
-    const allGroups = await groupModel.find();
+    const allGroups = await groupModel.find()
+        .populate('createdBy', 'name email') 
+        .populate('members', 'name email');  
     if (!allGroups) {
-        throw new Error('Could not get all groups created')
+        throw new Error('Could not get all groups created');
     }
     return allGroups;
-}
-export const inviteGroupLink = async (body: invitationRequestBody)=> {
-    const {groupId, inviterId, email} = body;
-    if(!groupId && !inviterId && !email) {
-        throw new Error ('Please provide any of the following details')
+};
+export const inviteGroupLink = async (body: invitationRequestBody) => {
+    const { groupId, inviterId, emails } = body;
+
+    if (!groupId || !inviterId || !Array.isArray(emails) || emails.length < 1 || emails.length > 4) {
+        throw new Error('Please provide a valid groupId, inviterId, and a list of 1 to 4 emails.');
     }
     const group = await groupModel.findById(groupId);
     if (!group) {
         throw new Error('Group not found');
     }
-    if (group.isFull || group.members.length >= 4) {
-        throw new Error('This group is already full.')
+    if (group.members.length + emails.length > 4) {
+        throw new Error('Inviting these users would exceed the group capacity.');
     }
-    const invitation = new invitationModel({
-        email,
-        groupId,
-        invitedBy: inviterId
-    })
-    if (!invitation) {
-        throw new Error('Could not send an invitation link')
-    }
-    await invitation.save()
-
     const transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
@@ -104,15 +97,23 @@ export const inviteGroupLink = async (body: invitationRequestBody)=> {
             pass: process.env.EMAIL_PASS
         },
     });
-    const mailOptions = {
-        to: email,
-        from: process.env.EMAIL_USER,
-        subject: 'You are invited to join a group',
-        text: `You have been invited to join the group "${group.name}". Click the link to join: ${process.env.FRONTEND_URL}/join/${group.inviteLink}`
+    for (const email of emails) {
+        const invitation = new invitationModel({
+            email,
+            groupId,
+            invitedBy: inviterId
+        });
+        await invitation.save();
+        const mailOptions = {
+            to: email,
+            from: process.env.EMAIL_USER,
+            subject: 'You are invited to join a group',
+            text: `You have been invited to join the group "${group.name}". Click the link to join: ${process.env.FRONTEND_URL}/join/${group.inviteLink}`
+        };
+        await transporter.sendMail(mailOptions);
     }
-    await transporter.sendMail(mailOptions);
-    return {invitation}
-}
+    return { message: 'Invitations sent successfully.' };
+};
 export const joinGroup = async (userId: string, inviteLink: string): Promise<any> => {
     const userObjectId = new Types.ObjectId(userId);
     if (!Types.ObjectId.isValid(userId)) {
