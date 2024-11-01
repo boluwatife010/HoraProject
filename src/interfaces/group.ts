@@ -6,8 +6,8 @@ export interface Group extends Document {
     inviteLink: string;
     isFull: boolean;
     repeatTask: 'daily' | 'weekly' |  'none';
-    createdBy: string;
-    type: ['Personal', 'Group'];
+    createdBy: mongoose.Types.ObjectId;
+    type: 'Personal' | 'Group';
     createdAt: Date;
     expiresAt: Date;
     dueDate: Date;
@@ -20,8 +20,8 @@ export interface updateGroupRequest {
 }
 export interface Invitation extends Document{
     email: string;
-    groupId: mongoose.Schema.Types.ObjectId[];
-    invitedBy: mongoose.Schema.Types.ObjectId[];
+    groupId: mongoose.Types.ObjectId;
+    invitedBy: mongoose.Types.ObjectId;
     status: 'pending'| 'accepted' | 'expired';
 }
 export interface invitationRequestBody {

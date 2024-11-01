@@ -1,19 +1,23 @@
-import mongoose from 'mongoose';
-import {Group, Invitation} from '../interfaces/group'
-const Schema = mongoose.Schema;
+import mongoose, { Schema, Types } from 'mongoose';
+import { Group, Invitation } from '../interfaces/group';
+
 const groupSchema = new Schema<Group>({
     name: {
         type: String, 
         required: true
     },
-    createdBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }],
-    type: ['Personal', 'Group'],
+    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    type: {
+        type: String,
+        enum: ['Personal', 'Group'],
+        default: 'Group'
+    },
     members: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
     tasks: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Task'
     }],
     repeatTask: [{
@@ -22,10 +26,11 @@ const groupSchema = new Schema<Group>({
         default: 'none'
     }],
     dueDate: {
-        type: Date,
-        required: false
+        type: Date
     },
-    time : {type: String},
+    time: {
+        type: String
+    },
     inviteLink: {
         type: String,
         required: true
@@ -46,7 +51,7 @@ const groupSchema = new Schema<Group>({
 
 export const groupModel = mongoose.model<Group>('Group', groupSchema);
 
-const invationSchema = new Schema ({
+const invitationSchema = new Schema<Invitation>({
     groupId: {
         type: Schema.Types.ObjectId,
         ref: 'Group',
@@ -58,12 +63,12 @@ const invationSchema = new Schema ({
     },
     invitedBy: {
         type: Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'User'
     },
     status: {
         type: String,
-        enum: ['pending', 'expired','accepted'],
+        enum: ['pending', 'expired', 'accepted'],
         default: 'pending'
     }
-})
-export const invitationModel = mongoose.model<Invitation>('Invitation', invationSchema);
+});
+export const invitationModel = mongoose.model<Invitation>('Invitation', invitationSchema);

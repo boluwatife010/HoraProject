@@ -88,12 +88,8 @@ export const getGroupHandler = async (req: express.Request, res: express.Respons
     }
 }
 export const getAllGroupsHandler = async (req: express.Request, res: express.Response) => {
-    const {id} = req.params
     try {
-        if (!id) {
-            return res.status(400).send({message: 'Please provide a valid id.'})
-        }
-        const groups = await getAllGroups(id)
+        const groups = await getAllGroups()
         if (!groups) {
             return res.status(400).send({message: 'Could not get all groups'})
         }

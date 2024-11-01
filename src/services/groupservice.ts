@@ -14,29 +14,31 @@ function generateInviteCode(length: number = 6): string {
     return inviteCode;
 }
 export const createGroup = async (groupName: string, userId: string): Promise<any> => {
-  const inviteLink = generateInviteCode(6);
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const newGroup = new groupModel({
-    name: groupName,
-    members: [new Types.ObjectId(userId)],
-    inviteLink,
-    isFull: false,
-    task: [],
-    createdBy: new Types.ObjectId(userId),
-    expiresAt,
-  });
-  if (!newGroup) {
-    throw new Error('Please provide all the valid requirements');
-  }
-  await newGroup.save();
-  const populatedGroup = await groupModel
-    .findById(newGroup._id)
-    .populate('createdBy', '-password') 
-    // .populate('members', '-password');  
-
-  return populatedGroup;
-};
-
+    const inviteLink = generateInviteCode(6);
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const newGroup = new groupModel({
+      name: groupName,
+      members: [new Types.ObjectId(userId)],
+      inviteLink,
+      isFull: false,
+      tasks: [],
+      createdBy: new Types.ObjectId(userId),
+      expiresAt,
+    });
+    if (!newGroup) {
+      throw new Error('Please provide all the valid requirements');
+    }
+    await newGroup.save();
+    const populatedGroup = await groupModel
+      .findById(newGroup._id)
+      .populate('createdBy', '-password') 
+      .populate({
+        path: 'members',  
+        select: '-password',
+        options: { strictPopulate: false }, 
+      });
+    return populatedGroup;
+  };
 export const updateGroup = async (groupName: string, userId: string, email?: string): Promise<any> => {
     if (!groupName || !userId) {
         throw new Error('Please provide both a group name and user ID.');
@@ -60,18 +62,18 @@ export const getGroup = async (id: string) => {
         throw new Error('Please provide a valid group id');
     }
     const group = await groupModel.findById(id)
-        .populate('createdBy', 'name email') 
-        .populate('members', 'name email');  
+        .populate('createdBy', '-password') 
+        .populate('members', '-password');  
 
     if (!group) {
         throw new Error('Could not get the specific group with the provided id');
     }
     return group;
 };
-export const getAllGroups = async (id: string) => {
+export const getAllGroups = async () => {
     const allGroups = await groupModel.find()
-        .populate('createdBy', 'name email') 
-        .populate('members', 'name email');  
+        .populate('createdBy', '-password') 
+        .populate('members', '-password');  
     if (!allGroups) {
         throw new Error('Could not get all groups created');
     }
@@ -234,6 +236,7 @@ export const leaveGroup = async (groupId: string, userId: string) => {
     await group.save();
     return { message: 'User left the group' };
 };
+
 
 export const deleteUserFromGroup = async (groupId: string, userId: string) => {
     const group = await groupModel.findById(groupId);
