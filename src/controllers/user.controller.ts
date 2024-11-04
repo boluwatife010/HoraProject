@@ -172,7 +172,7 @@ export const forgotPasswordHandler = async (req: express.Request, res: express.R
         if (!forgetRoute) {
             return res.status(400).send({message: 'could not create otp'})
         }
-        return res.status(200).send({message: 'Successfully sent otp check your email.'})
+        return res.status(200).send({message: 'Successfully sent otp check your email.', forgetRoute})
     }   catch (err) {
         console.log(err, 'Invalid err');
         return res.status(500).send({message: 'Internal server error.'}); 
