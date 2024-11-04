@@ -153,18 +153,14 @@ export const forgotPassword = async (email: string): Promise<any> => {
   user.resetPasswordToken = otp;
   user.resetPasswordExpires = new Date(Date.now() + 3600000);
   await user.save();
+  const userInfo = {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    isVerified: user.isVerified,
+  };
   console.log(`Generated OTP for ${email}: ${otp}`);
   try {
-    // const accessTokenObj = await oauth2Client.getAccessToken();
-    // if (accessTokenObj instanceof Error) {
-    //   console.error('Access token error:', accessTokenObj.message);
-    //   throw new Error('Failed to generate access token. Please check credentials.');
-    // }
-    
-    // const accessToken = accessTokenObj?.token;
-    // if (!accessToken) {
-    //   throw new Error('Failed to generate access token.');
-    // }
     const transporter = nodemailer.createTransport({
       service: 'Gmail',
       auth: {
@@ -179,7 +175,7 @@ export const forgotPassword = async (email: string): Promise<any> => {
       text: `Your OTP for password reset is: ${otp}`,
     };
     await transporter.sendMail(mailOptions);
-    return { message: 'OTP sent to email :)' };
+    return { message: 'OTP sent to email :)' , userInfo};
   } catch (err) {
     console.error('Error sending OTP email:', err);
     throw new Error('Failed to send OTP email. Please try again later.');

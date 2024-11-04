@@ -23,13 +23,13 @@ export const createGroupHandler = async (req: express.Request, res: express.Resp
     }
 }
 export const updateGroupHandler = async (req: express.Request, res: express.Response) => {
-    const {groupName, email} = req.body
-    const {userId} = req.params
-    if (!groupName || !userId) {
+    const {groupName} = req.body
+    const {groupId} = req.params
+    if (!groupName || !groupId ) {
         return res.status(400).send({message: 'Please provide the groupname or the id in the request.'})
     }
     try {
-        const change = await updateGroup(groupName, userId, email)
+        const change = await updateGroup(groupName, groupId)
         if (!change) {
             return res.status(400).send({message: 'Could not update the group name.'})
         }

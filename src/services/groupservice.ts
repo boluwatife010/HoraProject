@@ -19,7 +19,7 @@ export const createGroup = async (groupName: string, userId: string): Promise<an
     const inviteLink = generateInviteCode(6);
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
     const newGroup = new groupModel({
-      name: groupName,
+      groupName,
       members: [new Types.ObjectId(userId)],
       inviteLink,
       isFull: false,
@@ -41,36 +41,17 @@ export const createGroup = async (groupName: string, userId: string): Promise<an
       });
     return populatedGroup;
   };
-  export const updateGroup = async (groupName: string, userId: string, email?: string): Promise<any> => {
-    if (!groupName || !userId) {
-        throw new Error('Please provide both a group name and user ID.');
-    }
-    const updateFields: any = { name: groupName };
-    if (email) {
-        updateFields.email = email;
-        updateFields.isVerified = false;
-        const onetime = generateOtp(); 
-        const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-        const user = await userModel.findByIdAndUpdate(
-            userId,
-            { onetime, otpExpires, isVerified: false, email },
-            { new: true }
-        );
-
-        if (!user) {
-            throw new Error('User not found or could not be updated.');
+  export const updateGroup = async (groupName: string, groupId: string): Promise<any> => {
+        const updateFields = await groupModel.findById(groupId);
+        if (!updateFields) {
+            throw new Error ('Could not find group with this id.')
         }
-        await sendEmail(email, 'Verify Your Email', `Your OTP is ${onetime}`);
-    }
-    const group = await groupModel.findOneAndUpdate(
-        { _id: userId },
-        updateFields,
-        { new: true }
-    );
-    if (!group) {
-        throw new Error('Group not found or could not be updated.');
-    }
-    return group;
+        console.log(updateFields)
+        if (groupName) {
+            updateFields.groupName = groupName
+        }
+        await updateFields.save()
+        return {updateFields}
 };
 
 export const getGroup = async (id: string) => {
@@ -126,7 +107,7 @@ export const inviteGroupLink = async (body: invitationRequestBody) => {
             to: email,
             from: process.env.EMAIL_USER,
             subject: 'You are invited to join a group',
-            text: `You have been invited to join the group "${group.name}". Click the link to join: ${process.env.FRONTEND_URL}/join/${group.inviteLink}`
+            text: `You have been invited to join the group "${group.groupName}". Click the link to join: ${process.env.FRONTEND_URL}/join/${group.inviteLink}`
         };
         await transporter.sendMail(mailOptions);
     }

@@ -2,7 +2,7 @@ import mongoose, { Document} from 'mongoose';
 
 export interface Group extends Document {
     _id: mongoose.Types.ObjectId;
-    name: string;
+    groupName: string;
     members: mongoose.Types.ObjectId[];
     tasks: mongoose.Types.ObjectId[];
     inviteLink: string;

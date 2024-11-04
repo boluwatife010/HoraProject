@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import { Group, Invitation } from '../interfaces/group';
 
 const groupSchema = new Schema<Group>({
-    name: {
+    groupName: {
         type: String,
         required: true
     },
