@@ -1,9 +1,11 @@
 import { groupModel, invitationModel } from "../models/groupmodel";
 import nodemailer from 'nodemailer';
+import { generateOtp } from "../utils/generateOtp";
 import mongoose, { Types } from "mongoose";
 import { taskModel } from "../models/taskmodel";
 import { userModel } from "../models/usermodel";
 import { createGroupTaskBody, invitationRequestBody, updateGroupRequest } from "../interfaces/group";
+import { sendEmail } from "../utils/sendmail";
 
 function generateInviteCode(length: number = 6): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxys0123456789';
@@ -39,13 +41,26 @@ export const createGroup = async (groupName: string, userId: string): Promise<an
       });
     return populatedGroup;
   };
-export const updateGroup = async (groupName: string, userId: string, email?: string): Promise<any> => {
+  export const updateGroup = async (groupName: string, userId: string, email?: string): Promise<any> => {
     if (!groupName || !userId) {
         throw new Error('Please provide both a group name and user ID.');
     }
     const updateFields: any = { name: groupName };
     if (email) {
         updateFields.email = email;
+        updateFields.isVerified = false;
+        const onetime = generateOtp(); 
+        const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+        const user = await userModel.findByIdAndUpdate(
+            userId,
+            { onetime, otpExpires, isVerified: false, email },
+            { new: true }
+        );
+
+        if (!user) {
+            throw new Error('User not found or could not be updated.');
+        }
+        await sendEmail(email, 'Verify Your Email', `Your OTP is ${onetime}`);
     }
     const group = await groupModel.findOneAndUpdate(
         { _id: userId },
@@ -57,6 +72,7 @@ export const updateGroup = async (groupName: string, userId: string, email?: str
     }
     return group;
 };
+
 export const getGroup = async (id: string) => {
     if (!id) {
         throw new Error('Please provide a valid group id');
@@ -70,10 +86,10 @@ export const getGroup = async (id: string) => {
     }
     return group;
 };
-export const getAllGroups = async () => {
+export const getAllGroups = async (userId:string) => {
     const allGroups = await groupModel.find()
-        .populate('createdBy', '-password') 
-        .populate('members', '-password');  
+        .populate('createdBy', '-password -__v') 
+        .populate('members', '-password -__v');  
     if (!allGroups) {
         throw new Error('Could not get all groups created');
     }

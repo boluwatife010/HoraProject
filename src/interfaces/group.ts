@@ -1,11 +1,14 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document} from 'mongoose';
+
 export interface Group extends Document {
+    _id: mongoose.Types.ObjectId;
     name: string;
-    members: mongoose.Types.ObjectId[]; 
+    members: mongoose.Types.ObjectId[];
     tasks: mongoose.Types.ObjectId[];
     inviteLink: string;
     isFull: boolean;
-    repeatTask: 'daily' | 'weekly' |  'none';
+    isVerified: boolean;
+    repeatTask: 'daily' | 'weekly' | 'none';
     createdBy: mongoose.Types.ObjectId;
     type: 'Personal' | 'Group';
     createdAt: Date;

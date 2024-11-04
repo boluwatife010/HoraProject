@@ -1,19 +1,23 @@
-import mongoose, { Schema, Types } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { Group, Invitation } from '../interfaces/group';
 
 const groupSchema = new Schema<Group>({
     name: {
-        type: String, 
+        type: String,
         required: true
     },
-    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    createdBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     type: {
         type: String,
         enum: ['Personal', 'Group'],
         default: 'Group'
     },
     members: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User'
     }],
     tasks: [{
@@ -41,15 +45,19 @@ const groupSchema = new Schema<Group>({
     },
     createdAt: {
         type: Date,
-        default: Date.now 
+        default: Date.now
     },
     expiresAt: {
         type: Date,
         required: true
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
     }
 });
-
 export const groupModel = mongoose.model<Group>('Group', groupSchema);
+
 
 const invitationSchema = new Schema<Invitation>({
     groupId: {

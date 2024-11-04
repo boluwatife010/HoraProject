@@ -88,8 +88,9 @@ export const getGroupHandler = async (req: express.Request, res: express.Respons
     }
 }
 export const getAllGroupsHandler = async (req: express.Request, res: express.Response) => {
+    const {userId} = req.params
     try {
-        const groups = await getAllGroups()
+        const groups = await getAllGroups(userId)
         if (!groups) {
             return res.status(400).send({message: 'Could not get all groups'})
         }
@@ -200,10 +201,9 @@ export const deleteGroupTaskHandler = async (req: express.Request, res: express.
     }
 }
 export const leaveGroupHandler = async (req: express.Request, res: express.Response) => {
-    const {groupId} = req.params
-    const { userId} = req.body.userId
+    const {groupId, userId} = req.params
     try {
-        if (!groupId && !userId) {
+        if (!groupId || !userId) {
             return res.status(400).send({message: 'Please update the following fields'})
         }
         const leave = await leaveGroup(groupId, userId)

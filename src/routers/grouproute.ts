@@ -9,10 +9,10 @@ router.post('/join', joinGroupHandler)
 router.post('/new-task', createGroupTaskHandler);
 router.put('/update-task/:id', updateGroupTaskHandler);
 router.post('/send-link', inviteGroupLinkHandler);
-router.post('/leave/:groupId', leaveGroupHandler);
+router.delete('/:groupId/leave/:userId', leaveGroupHandler);
 router.post('/name/:userId', updateGroupHandler)
 router.get('/:id', getGroupHandler)
-router.get('/all-groups/', getAllGroupsHandler)
+router.get('/allgroups/:userId', getAllGroupsHandler)
 router.get('/:groupId/task/:taskId', getGroupTaskHandler);
 router.get('/:groupId/tasks', getAllGroupTasksHandler);
 router.delete('/:groupId/member/:userId', deleteUserHandler);
