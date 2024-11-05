@@ -105,6 +105,10 @@ export const updateUser = async (body: updateUserRequestBody, id: string): Promi
         update.password = password;
         
     }
+    update.isVerified = false;
+    if (update.isVerified === false) {
+      throw new Error ('Please re-verify your email!')
+    }
    await update.save();
    return update
 
