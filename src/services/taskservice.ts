@@ -1,29 +1,29 @@
 import { taskModel } from "../models/taskmodel";
 import cron from 'node-cron'
 import { createTaskRequestBody, searchTaskRequestBody, updateTaskRequestBody } from "../interfaces/task";
-import { userModel } from "../models/usermodel";
-import mongoose from "mongoose";
+import { userModel } from "../models/usermodel"
+
 export const createTask = async (body: createTaskRequestBody): Promise<any> => {
-    const { title, description, dueDate, repeatTask, createdBy, time } = body;
-    if (!title || !description || !dueDate || !createdBy) {
-      throw new Error('Please provide title, description, dueDate, and createdBy.');
-    }
-    let parsedDueDate: Date | undefined;
-    if (dueDate) {
+  const { title, description, dueDate, repeatTask, createdBy, time } = body;
+  if (!title || !description || !dueDate || !createdBy) {
+      throw new Error('Please provide title, description, dueDate and createdBy.');
+  }
+  let parsedDueDate: Date | undefined;
+  if (dueDate) {
       parsedDueDate = new Date(dueDate);
       if (isNaN(parsedDueDate.getTime())) {
-        throw new Error('Invalid date format.');
+          throw new Error('Invalid date format.');
       }
       if (time) {
-        const [hours, minutes] = time.split(':').map(Number); 
-        if (isNaN(hours) || isNaN(minutes)) {
-          throw new Error('Invalid time format. Please provide time in "HH:MM" format.');
-        }
-        parsedDueDate.setHours(hours);
-        parsedDueDate.setMinutes(minutes);
+          const [hours, minutes] = time.split(':').map(Number);
+          if (isNaN(hours) || isNaN(minutes)) {
+              throw new Error('Invalid time format. Please provide time in "HH:MM" format.');
+          }
+          parsedDueDate.setHours(hours);
+          parsedDueDate.setMinutes(minutes);
       }
-    }
-    const newTask = new taskModel({
+  }
+  const newTask = new taskModel({
       title,
       description,
       type: ['Personal'],
@@ -31,14 +31,17 @@ export const createTask = async (body: createTaskRequestBody): Promise<any> => {
       repeatTask,
       createdBy,
       time,
-    });
-    if (!newTask) {
+  });
+  if (!newTask) {
       throw new Error('Could not create a new task, please cross-check your details.');
-    }
-    await newTask.save();
-    return newTask;
-  };
-    
+  }
+  await newTask.save();
+  await newTask.populate({
+      path: 'createdBy',
+      select: '-password' 
+  })
+  return newTask;
+};
 
 export const getATask = async (id: string): Promise<any> => {
     // if (!mongoose.Types.ObjectId.isValid(id)) {

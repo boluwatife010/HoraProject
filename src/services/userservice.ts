@@ -60,35 +60,26 @@ export const verifyEmailOtp = async (email: string, onetime: string) => {
   return user;
 };
 export const loginUser = async (body: loginRequestBody): Promise<any> => {
-    const {email, password} = body;
-    const login = await userModel.findOne({email})
-    if (!login) {
-        throw new Error ('Could not log the user in')
-    }
-    const comparing = await bcrypt.compare(password, login.password);
-    if (!comparing) {
-        throw new Error ('Invalid password used.')
-    }
-    let token = login.token
-    try {
-      if (token ) {
-        verifyAuthToken(token)
-      }
-      else {
-        // No token exists, generate a new token
-        token = generateAuthToken(login._id.toString());
-        login.token = token;
-        await login.save();
-      }
-      await updateStreak(login._id.toString());
+  const { email, password } = body;
+  const user = await userModel.findOne({ email });
+  if (!user) {
+      throw new Error('User not found');
+  }
+  const passwordMatches = await bcrypt.compare(password, user.password);
+  if (!passwordMatches) {
+      throw new Error('Invalid password');
+  }
+  let token = generateAuthToken(user._id.toString());
+  user.token = token;
+  await user.save();
+  try {
+      await updateStreak(user._id.toString());
   } catch (err) {
-        token = generateAuthToken(login._id.toString());
-        login.token = token;
-        await login.save();
       console.error('Error updating streak:', err);
   }
-    return {login};
-}
+  return { token, message: 'Login successful' };
+};
+
 export const updateUser = async (body: updateUserRequestBody, id: string): Promise<any> => {
     const {email, password, username} =  body;
     const update = await userModel.findById(id);
@@ -145,6 +136,8 @@ export const changePassword = async (id: string, body: changePasswordRequestBody
         throw new Error ('The old password is not correct')
     }
     user.password = await bcrypt.hash(newPassword, 10)
+    console.log('Updated password:', user.password);
+    user.token = undefined;
     await user.save();
     return {message: 'Password changed successfully.'}
 }
