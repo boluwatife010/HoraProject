@@ -1,14 +1,14 @@
 import jwt,{ Secret} from 'jsonwebtoken';
 import express from 'express';
-import {  User } from '../interfaces/user';
+import {  User, AuthPayload } from '../interfaces/user';
 require('dotenv').config();
-export const generateAuthToken = (userId: string): string => {
-    const token = jwt.sign({userId}, process.env.JWT_SECRET as Secret, {expiresIn: '30d'});
+export const generateAuthToken = (userId: string, tokenVersion: number ): string => {
+    const token = jwt.sign({userId, tokenVersion}, process.env.JWT_SECRET as Secret, {expiresIn: '30d'});
     return token;
 }
 export const verifyAuthToken =  (token: string): any => {
     try {
-        const decode =jwt.verify(token, process.env.JWT_SECRET as Secret)
+        const decode =jwt.verify(token, process.env.JWT_SECRET as Secret) as AuthPayload
         return decode;
     }   catch (err) {
         throw new Error ('Invalid token inputed')
@@ -35,7 +35,7 @@ export const authenticateToken = (req:express.Request, res: express.Response, ne
   if (!user) {
     return res.status(401).send({ message: 'User not authenticated' });
   }
-  const token = generateAuthToken(user._id .toString());
+  const token = generateAuthToken(user._id .toString(), user.tokenVersion);
   const frontendUrl = process.env.FRONTEND_URL;
 if (frontendUrl) {
     res.redirect(`${frontendUrl}/success?token=${token}`);

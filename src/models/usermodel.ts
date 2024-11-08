@@ -42,6 +42,7 @@ const userSchema: Schema<Iuser> = new Schema({
     onetime: { type: String },
     otpExpires: { type: Date },
     isVerified: { type: Boolean, default: false },
+    tokenVersion: { type: Number, default: 0 }
 });
 userSchema.pre<Iuser>('save', async function (next) {
     if (!this.isModified('password')) return next();

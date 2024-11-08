@@ -4,6 +4,7 @@ export interface Iuser extends Document {
     _id: mongoose.Types.ObjectId;
     username: string;
     points: number;
+    tokenVersion: number;
     token?: string;
     socketId: string;
     email: string;
@@ -23,8 +24,12 @@ export interface Iuser extends Document {
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
 }
-
+export interface AuthPayload {
+    userId: string;
+    tokenVersion: number;
+}
 export interface User {
+    tokenVersion: number ;
     _id: ObjectId;
     email?: string,
     id: string,

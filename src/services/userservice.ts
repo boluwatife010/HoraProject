@@ -22,14 +22,14 @@ export const registerUser = async (body: registerRequestBody):Promise <any> => {
     if (existingUser) {
         throw new Error ('This email is already in use!')
     }
-    // const hashPassord = await bcrypt.hash(password, 10);
+    const hashPassord = await bcrypt.hash(password, 10);
     const onetime = generateOtp();
     if (!onetime) {
         throw new Error('Could not generate otp')
     }
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-    const createUser = new userModel({ email, password, onetime, otpExpires, username});
-    const token = generateAuthToken(createUser._id.toString());
+    const createUser = new userModel({ email, password: hashPassord, onetime, otpExpires, username});
+    const token = generateAuthToken(createUser._id.toString(), createUser.tokenVersion);
     createUser.token = token;
     if (!createUser) {
         throw new Error ('Please validate your details above')
@@ -65,11 +65,14 @@ export const loginUser = async (body: loginRequestBody): Promise<any> => {
   if (!user) {
       throw new Error('User not found');
   }
+  console.log("Plain text password received from request:", password);
+  console.log("Hashed password stored in database:", user.password);
   const passwordMatches = await bcrypt.compare(password, user.password);
   if (!passwordMatches) {
+    console.log(passwordMatches)
       throw new Error('Invalid password');
   }
-  let token = generateAuthToken(user._id.toString());
+  let token = generateAuthToken(user._id.toString(), user.tokenVersion);
   user.token = token;
   await user.save();
   try {
@@ -135,9 +138,10 @@ export const changePassword = async (id: string, body: changePasswordRequestBody
     if (!matching) {
         throw new Error ('The old password is not correct')
     }
-    user.password = await bcrypt.hash(newPassword, 10)
-    console.log('Updated password:', user.password);
-    user.token = undefined;
+    const newHashedPassword = await bcrypt.hash(newPassword, 10)
+    user.password = newHashedPassword
+    console.log('Updated password:', newPassword, newHashedPassword);
+    user.tokenVersion += 1;
     await user.save();
     return {message: 'Password changed successfully.'}
 }
@@ -227,6 +231,7 @@ export const resetPassword = async (email: string, newPassword:string, otp:strin
     user.password = await bcrypt.hash(newPassword, 10);
     user.resetPasswordToken = undefined; 
     user.resetPasswordExpires = undefined;
+    user.tokenVersion += 1;
     await user.save();
     return { message: 'Password reset successfully' };
 };
