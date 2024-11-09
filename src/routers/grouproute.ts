@@ -15,7 +15,7 @@ router.get('/:id', getGroupHandler)
 router.get('/allgroups/:userId', getAllGroupsHandler)
 router.get('/:groupId/task/:taskId', getGroupTaskHandler);
 router.get('/:groupId/tasks', getAllGroupTasksHandler);
-router.get('/complete/group-task', completeTaskHandler)
+router.post('/complete/group-task', completeTaskHandler)
 router.delete('/:groupId/member/:userId', deleteUserHandler);
 router.delete('/:groupId/task/:taskId', deleteGroupTaskHandler);
 router.get('/leaderboard/:groupId', getLeaderBoardHandler)

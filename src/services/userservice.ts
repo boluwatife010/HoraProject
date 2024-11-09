@@ -22,13 +22,13 @@ export const registerUser = async (body: registerRequestBody):Promise <any> => {
     if (existingUser) {
         throw new Error ('This email is already in use!')
     }
-    const hashPassord = await bcrypt.hash(password, 10);
+    //const hashPassord = await bcrypt.hash(password, 10);
     const onetime = generateOtp();
     if (!onetime) {
         throw new Error('Could not generate otp')
     }
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-    const createUser = new userModel({ email, password: hashPassord, onetime, otpExpires, username});
+    const createUser = new userModel({ email, password, onetime, otpExpires, username});
     const token = generateAuthToken(createUser._id.toString(), createUser.tokenVersion);
     createUser.token = token;
     if (!createUser) {
@@ -65,8 +65,6 @@ export const loginUser = async (body: loginRequestBody): Promise<any> => {
   if (!user) {
       throw new Error('User not found');
   }
-  console.log("Plain text password received from request:", password);
-  console.log("Hashed password stored in database:", user.password);
   const passwordMatches = await bcrypt.compare(password, user.password);
   if (!passwordMatches) {
     console.log(passwordMatches)
@@ -128,23 +126,23 @@ export const deleteUser = async (id: string): Promise<any> => {
     }
     return deleting;
 }
-export const changePassword = async (id: string, body: changePasswordRequestBody,) => {
-    const {oldPassword, newPassword} = body
-    const user = await userModel.findById(id);
-    if (!user) {
-        throw new Error ('User not found');
-    }
-    const matching = await bcrypt.compare(oldPassword, user.password)
-    if (!matching) {
-        throw new Error ('The old password is not correct')
-    }
-    const newHashedPassword = await bcrypt.hash(newPassword, 10)
-    user.password = newHashedPassword
-    console.log('Updated password:', newPassword, newHashedPassword);
-    user.tokenVersion += 1;
-    await user.save();
-    return {message: 'Password changed successfully.'}
-}
+export const changePassword = async (id: string, body: changePasswordRequestBody) => {
+  const { oldPassword, newPassword } = body;
+  const user = await userModel.findById(id);
+  if (!user) {
+      throw new Error('User not found');
+  }
+  const matching = await bcrypt.compare(oldPassword, user.password);
+  if (!matching) {
+      throw new Error('The old password is not correct');
+  }
+  user.password = newPassword;
+  user.token = undefined; 
+  await user.save();
+  console.log('Password changed successfully and saved to the database');
+  return { message: 'Password changed successfully.' };
+};
+
 export const forgotPassword = async (email: string): Promise<any> => {
   const user = await userModel.findOne({ email });
   if (!user) {
@@ -215,9 +213,6 @@ export const calculateProgress = async (userId: string) => {
 };
 
 export const resetPassword = async (email: string, newPassword:string, otp:string): Promise<any> => {
-    console.log("Resetting password for email:", email);
-    console.log("Provided OTP:", otp); 
-    console.log("Provided new password:", newPassword);
     const user = await userModel.findOne({
       email: email.trim(),
       resetPasswordToken: otp.trim(), 
@@ -228,7 +223,7 @@ export const resetPassword = async (email: string, newPassword:string, otp:strin
       throw new Error('OTP is invalid or has expired.');
     }
     console.log("User found. Proceeding with password reset.");
-    user.password = await bcrypt.hash(newPassword, 10);
+    user.password = newPassword;
     user.resetPasswordToken = undefined; 
     user.resetPasswordExpires = undefined;
     user.tokenVersion += 1;
