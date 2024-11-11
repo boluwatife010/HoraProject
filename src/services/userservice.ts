@@ -78,7 +78,7 @@ export const loginUser = async (body: loginRequestBody): Promise<any> => {
   } catch (err) {
       console.error('Error updating streak:', err);
   }
-  return { token, message: 'Login successful' };
+  return { message: 'login successfull', user, token };
 };
 
 export const updateUser = async (body: updateUserRequestBody, id: string): Promise<any> => {
@@ -97,7 +97,6 @@ export const updateUser = async (body: updateUserRequestBody, id: string): Promi
         update.password = password;
         
     }
-    update.isVerified = false;
     if (update.isVerified === false) {
       throw new Error ('Please re-verify your email!')
     }
