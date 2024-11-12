@@ -196,7 +196,10 @@ export const completeTask = async (taskId: string, userId: string) => {
 
 
 export const getGroupTask = async (groupId: string, taskId: string) => {
-    const group = await groupModel.findById(groupId).populate('tasks');
+    const group = await groupModel.findById(groupId).populate({
+        path: 'tasks',
+        populate: { path: 'createdBy'}
+    });
     if (!group) throw new Error('Group not found');
     const task = group.tasks.find(task => task._id.toString() === taskId);
     if (!task) throw new Error('Task not found');
@@ -206,9 +209,11 @@ export const getGroupTask = async (groupId: string, taskId: string) => {
 
 
 export const getAllGroupTasks = async (groupId: string) => {
-    const group = await groupModel.findById(groupId).populate('tasks');
+    const group = await groupModel.findById(groupId).populate({
+        path: 'tasks',
+        populate: { path: 'createdBy' } 
+    });
     if (!group) throw new Error('Group not found');
-
     return group.tasks;
 };
 

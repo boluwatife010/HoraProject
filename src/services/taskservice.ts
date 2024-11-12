@@ -47,14 +47,14 @@ export const getATask = async (id: string): Promise<any> => {
     // if (!mongoose.Types.ObjectId.isValid(id)) {
     //     throw new Error('Invalid task ID');
     // }
-    const task = await taskModel.findById(id);
+    const task = await taskModel.findById(id).populate('createdBy', '-password');
     if (!task) {
         throw new Error ('Could not find task with this id.')
     }
     return task;
 }
 export const getAllTasks = async (id:string): Promise<any> => {
-    const tasks = await taskModel.find();
+    const tasks = await taskModel.find().populate('createdBy', '-password');
     if (!tasks) {
         throw new Error ('Could not get all tasks');
     }
@@ -118,7 +118,7 @@ export const getTasksForDays = async (userId: string): Promise<any> => {
   const tasks = await taskModel.find({
     createdBy: userId,
     dueDate: { $gte: startOfYesterday, $lt: endOfToday }
-  });
+  }).populate('createdBy', '-password');;
   const completedTasks = tasks.filter(task => task.completed).length;
   const progress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
 
