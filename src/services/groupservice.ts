@@ -107,7 +107,7 @@ export const inviteGroupLink = async (body: invitationRequestBody) => {
             to: email,
             from: process.env.EMAIL_USER,
             subject: 'You are invited to join a group',
-            text: `You have been invited to join the group "${group.groupName}".Sign in or create a new account and join on: ${'https://hora-student-app.vercel.app/groups/joingroup'} ${group.inviteLink}`
+            text: `You have been invited to join the group "${group.groupName}".Sign in or create a new account and join on: ${`https://hora-student-app.vercel.app/groups/joingroup${group.inviteLink}`} `
         };
         await transporter.sendMail(mailOptions);
     }
